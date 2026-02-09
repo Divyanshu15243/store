@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { FiLock, FiMail } from "react-icons/fi";
+import { FiLock, FiMail, FiEye, FiEyeOff } from "react-icons/fi";
+import { useState } from "react";
 
 //internal  import
 import Layout from "@layout/Layout";
@@ -11,6 +12,7 @@ import BottomNavigation from "@components/login/BottomNavigation";
 const Login = () => {
   const { handleSubmit, submitHandler, register, errors, loading } =
     useLoginSubmit();
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Layout title="Login" description="This is login page">
@@ -33,7 +35,6 @@ const Login = () => {
                     <div className="form-group">
                       <InputArea
                         register={register}
-                        defaultValue="justin@gmail.com"
                         label="Email"
                         name="email"
                         type="email"
@@ -44,16 +45,24 @@ const Login = () => {
                       <Error errorName={errors.email} />
                     </div>
                     <div className="form-group">
-                      <InputArea
-                        register={register}
-                        defaultValue="12345678"
-                        label="Password"
-                        name="password"
-                        type="password"
-                        placeholder="Password"
-                        Icon={FiLock}
-                        autocomplete="current-password"
-                      />
+                      <div className="relative">
+                        <InputArea
+                          register={register}
+                          label="Password"
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          Icon={FiLock}
+                          autocomplete="current-password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-11 text-gray-500 hover:text-gray-700"
+                        >
+                          {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                        </button>
+                      </div>
 
                       <Error errorName={errors.password} />
                     </div>

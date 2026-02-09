@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import dynamic from "next/dynamic";
 import { FiMail } from "react-icons/fi";
 
 //internal import
@@ -98,4 +97,4 @@ const ForgetPassword = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(ForgetPassword), { ssr: false });
+export default ForgetPassword;
