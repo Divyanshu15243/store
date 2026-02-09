@@ -50,9 +50,20 @@ const CustomerServices = {
 
   addShippingAddress: async ({ userId = "", shippingAddressData }) => {
     return requests.post(
-      `customer/shipping/address/${userId}`,
+      `/customer/shipping/address/${userId}`,
       shippingAddressData
     );
+  },
+
+  updateShippingAddress: async ({ userId, shippingId, shippingAddressData }) => {
+    return requests.put(
+      `/customer/shipping/address/${userId}/${shippingId}`,
+      shippingAddressData
+    );
+  },
+
+  deleteShippingAddress: async ({ userId, shippingId }) => {
+    return requests.delete(`/customer/shipping/address/${userId}/${shippingId}`);
   },
 };
 

@@ -100,7 +100,7 @@ const Checkout = () => {
                           )}
                           name="firstName"
                           type="text"
-                          placeholder="John"
+                          placeholder="Name"
                         />
                         <Error errorName={errors.firstName} />
                       </div>
@@ -113,7 +113,7 @@ const Checkout = () => {
                           )}
                           name="lastName"
                           type="text"
-                          placeholder="Doe"
+                          placeholder="LastName"
                           required={false}
                         />
                         <Error errorName={errors.lastName} />
@@ -141,7 +141,7 @@ const Checkout = () => {
                           )}
                           name="contact"
                           type="tel"
-                          placeholder="+062-6532956"
+                          placeholder="+91 9876543211"
                         />
 
                         <Error errorName={errors.contact} />
@@ -166,7 +166,7 @@ const Checkout = () => {
                           )}
                           name="address"
                           type="text"
-                          placeholder="123 Boulevard Rd, Beverley Hills"
+                          placeholder="address.."
                         />
                         <Error errorName={errors.address} />
                       </div>
@@ -179,7 +179,7 @@ const Checkout = () => {
                           )}
                           name="city"
                           type="text"
-                          placeholder="Los Angeles"
+                          placeholder="surat"
                         />
                         <Error errorName={errors.city} />
                       </div>
@@ -192,7 +192,7 @@ const Checkout = () => {
                           )}
                           name="country"
                           type="text"
-                          placeholder="United States"
+                          placeholder="India"
                         />
                         <Error errorName={errors.country} />
                       </div>
@@ -205,7 +205,7 @@ const Checkout = () => {
                           )}
                           name="zipCode"
                           type="text"
-                          placeholder="2345"
+                          placeholder="333333"
                         />
                         <Error errorName={errors.zipCode} />
                       </div>
@@ -339,8 +339,8 @@ const Checkout = () => {
                     <div className="col-span-6 sm:col-span-3">
                       <button
                         type="submit"
-                        disabled={isEmpty || !stripe || isCheckoutSubmit}
-                        className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                        disabled={isEmpty || isCheckoutSubmit}
+                        className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isCheckoutSubmit ? (
                           <span className="flex justify-center text-center">

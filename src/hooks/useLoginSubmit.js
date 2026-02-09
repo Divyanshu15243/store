@@ -23,7 +23,7 @@ const useLoginSubmit = () => {
 
   // console.log("router", router.pathname === "/auth/signup");
 
-  const submitHandler = async ({ name, email, password, phone }) => {
+  const submitHandler = async ({ name, email, password, phone, referralCode }) => {
     setLoading(true);
 
     // console.log("submitHandler", phone);
@@ -38,6 +38,7 @@ const useLoginSubmit = () => {
           name,
           email,
           password,
+          referralCode,
         });
 
         // console.log("res", res);
