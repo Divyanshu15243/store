@@ -132,6 +132,11 @@ const Dashboard = ({ title, description, children }) => {
       icon: FiSettings,
     },
     {
+      title: "Bank Details",
+      href: "/user/bank-details",
+      icon: FiFileText,
+    },
+    {
       title: showingTranslateValue(
         storeCustomizationSetting?.dashboard?.change_password
       ),

@@ -217,7 +217,19 @@ const Checkout = () => {
                       )}
                     />
                     <div className="grid grid-cols-6 gap-6">
-                      <div className="col-span-6 sm:col-span-3">
+                      <div className="col-span-6 sm:col-span-2">
+                        <InputShipping
+                          currency={currency}
+                          handleShippingCost={handleShippingCost}
+                          register={register}
+                          value="Free Shipping"
+                          description="Free delivery"
+                          cost={0}
+                        />
+                        <Error errorName={errors.shippingOption} />
+                      </div>
+
+                      <div className="col-span-6 sm:col-span-2">
                         <InputShipping
                           currency={currency}
                           handleShippingCost={handleShippingCost}
@@ -242,7 +254,7 @@ const Checkout = () => {
                         <Error errorName={errors.shippingOption} />
                       </div>
 
-                      <div className="col-span-6 sm:col-span-3">
+                      <div className="col-span-6 sm:col-span-2">
                         <InputShipping
                           currency={currency}
                           handleShippingCost={handleShippingCost}

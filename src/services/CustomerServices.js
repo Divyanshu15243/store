@@ -65,6 +65,10 @@ const CustomerServices = {
   deleteShippingAddress: async ({ userId, shippingId }) => {
     return requests.delete(`/customer/shipping/address/${userId}/${shippingId}`);
   },
+
+  updateBankDetails: async (id, bankDetails) => {
+    return requests.put(`/customer/${id}`, { bankDetails });
+  },
 };
 
 export default CustomerServices;
