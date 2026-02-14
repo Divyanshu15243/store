@@ -298,7 +298,7 @@ const Checkout = () => {
                           <InputPayment
                             setShowCard={setShowCard}
                             register={register}
-                            name={t("common:cashOnDelivery")}
+                            name="Cash On Delivery"
                             value="Cash"
                             Icon={IoWalletSharp}
                           />

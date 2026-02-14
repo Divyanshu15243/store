@@ -327,7 +327,7 @@ const Footer = () => {
                     storeCustomizationSetting?.footer?.social_linkedin ||
                     storeCustomizationSetting?.footer?.social_whatsapp) && (
                     <span className="text-base leading-7 font-medium block mb-2 pb-0.5">
-                      {t("common:footer-follow-us")}
+                      Follow Us
                     </span>
                   )}
                   <ul className="text-sm flex">
@@ -404,7 +404,7 @@ const Footer = () => {
               {storeCustomizationSetting?.footer?.bottom_contact_status && (
                 <div>
                   <p className="text-base leading-7 font-medium block">
-                    {t("common:footer-call-us")}
+                    Call Us Today!
                   </p>
                   <h5 className="text-2xl font-bold text-emerald-500 leading-7">
                     {/* +012345-67900 */}

@@ -366,9 +366,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                                     onClick={() => setIsReadMore(!isReadMore)}
                                     className="read-or-hide"
                                   >
-                                    {isReadMore
-                                      ? t("common:moreInfo")
-                                      : t("common:showLess")}
+                                    {isReadMore ? "More Info" : "Show Less"}
                                   </span>
                                 )
                               : product?.description?.en?.length > 230 && (
@@ -376,9 +374,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                                     onClick={() => setIsReadMore(!isReadMore)}
                                     className="read-or-hide"
                                   >
-                                    {isReadMore
-                                      ? t("common:moreInfo")
-                                      : t("common:showLess")}
+                                    {isReadMore ? "More Info" : "Show Less"}
                                   </span>
                                 )}
                           </div>
@@ -412,7 +408,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                                 onClick={() => handleAddToCart(product)}
                                 className={`bg-gray-800 hover:text-white hover:bg-gray-900 text-white text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold  text-center justify-center border-0 border-transparent rounded-md focus-visible:outline-none focus:outline-none px-4 ml-4 md:px-6 lg:px-8 py-4 md:py-3.5 lg:py-4 w-full h-12`}
                               >
-                                {t("common:addToCart")}
+                                Add To Cart
                               </button>
                             </div>
                           </div>
@@ -420,7 +416,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                           <div className="flex flex-col mt-4">
                             <span className="font-serif font-semibold py-1 text-sm d-block">
                               <span className="text-gray-800">
-                                {t("common:category")}:
+                                Category:
                               </span>{" "}
                               <Link
                                 href={`/search?category=${category_name}&_id=${product?.category?._id}`}
@@ -449,10 +445,10 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                           {/* social share */}
                           <div className="mt-2">
                             <h3 className="text-base font-semibold mb-1 font-serif">
-                              {t("common:shareYourSocial")}
+                              Share Your Social
                             </h3>
                             <p className="font-sans text-sm text-gray-500">
-                              {t("common:shareYourSocialText")}
+                              Product social share
                             </p>
                             <ul className="flex mt-4">
                               <li className="flex items-center text-center border border-gray-100 rounded-full hover:bg-emerald-500  mr-2 transition ease-in-out duration-500">
@@ -517,7 +513,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
               {relatedProducts?.length >= 2 && (
                 <div className="pt-10 lg:pt-20 lg:pb-10">
                   <h3 className="leading-7 text-lg lg:text-xl mb-3 font-semibold font-serif hover:text-gray-600">
-                    {t("common:relatedProducts")}
+                    Related Products
                   </h3>
                   <div className="flex">
                     <div className="w-full">

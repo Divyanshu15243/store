@@ -58,6 +58,8 @@ const Dashboard = ({ title, description, children }) => {
         page: currentPage,
         limit: 10,
       }),
+    enabled: !!(currentUser?._id || currentUser?.id || session?.user),
+    retry: 1,
   });
 
   const { data: customerData, error: customerError, isLoading: customerLoading } = useQuery({
@@ -73,16 +75,6 @@ const Dashboard = ({ title, description, children }) => {
     enabled: !!(currentUser?._id || currentUser?.id),
     retry: false,
   });
-
-  useEffect(() => {
-    console.log("userInfo:", userInfo);
-    console.log("session:", session);
-    console.log("currentUser:", currentUser);
-    console.log("currentUser._id:", currentUser?._id);
-    console.log("customerData:", customerData);
-    console.log("customerError:", customerError);
-    console.log("customerLoading:", customerLoading);
-  }, [userInfo, session, currentUser, customerData, customerError, customerLoading]);
 
   const handleLogOut = () => {
     signOut();
@@ -117,6 +109,11 @@ const Dashboard = ({ title, description, children }) => {
       ),
       href: "/user/my-orders",
       icon: FiList,
+    },
+    {
+      title: "Referral Earnings",
+      href: "/user/referral-earnings",
+      icon: FiGift,
     },
     {
       title: "My Account",
@@ -198,7 +195,7 @@ const Dashboard = ({ title, description, children }) => {
                         storeCustomizationSetting?.dashboard?.dashboard_title
                       )}
                     </h2>
-                    <div className="grid gap-4 mb-8 md:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid gap-4 mb-8 md:grid-cols-2 xl:grid-cols-5">
                       <Card
                         title={showingTranslateValue(
                           storeCustomizationSetting?.dashboard?.total_order
@@ -230,6 +227,12 @@ const Dashboard = ({ title, description, children }) => {
                         Icon={FiCheck}
                         quantity={data?.delivered}
                         className="text-emerald-600 bg-emerald-200"
+                      />
+                      <Card
+                        title="Referral Earnings"
+                        Icon={FiGift}
+                        quantity={`₹${data?.referralEarnings || 0}`}
+                        className="text-purple-600 bg-purple-200"
                       />
                     </div>
 

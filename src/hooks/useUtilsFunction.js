@@ -34,9 +34,16 @@ const useUtilsFunction = () => {
 
   //for translation
   const showingTranslateValue = (data) => {
-    return data !== undefined && Object?.keys(data).includes(lang)
+    const value = data !== undefined && Object?.keys(data).includes(lang)
       ? data[lang]
       : data?.en;
+    
+    // Remove "common:" prefix if translation key is returned as-is
+    if (typeof value === 'string' && value.startsWith('common:')) {
+      return value.replace('common:', '');
+    }
+    
+    return value;
   };
 
   const showingImage = (data) => {

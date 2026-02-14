@@ -20,6 +20,11 @@ const OrderServices = {
   getOrderCustomer: async ({ page = 1, limit = 8 }) => {
     return requests.get(`/order?limit=${limit}&page=${page}`);
   },
+  
+  getReferralEarnings: async () => {
+    return requests.get("/order/referral-earnings");
+  },
+  
   getOrderById: async (id, body) => {
     return requests.get(`/order/${id}`, body);
   },
