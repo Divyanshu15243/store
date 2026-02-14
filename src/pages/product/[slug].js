@@ -77,6 +77,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
           sku,
           productId,
           image,
+          profit,
           ...rest
         }) => ({ ...rest })
       );
@@ -96,7 +97,6 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
         Object.keys(newObj).every((k) => newObj[k] === v[k])
       );
 
-      // console.log("result2", result2);
       if (result.length <= 0 || result2 === undefined) return setStock(0);
 
       setVariants(result);

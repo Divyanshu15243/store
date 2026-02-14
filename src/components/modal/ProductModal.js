@@ -62,6 +62,7 @@ const ProductModal = ({
           sku,
           productId,
           image,
+          profit,
           ...rest
         }) => ({
           ...rest,
