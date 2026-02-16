@@ -21,7 +21,7 @@ class MyDocument extends Document {
             property="og:title"
             content={
               setting?.meta_title ||
-              "KachaBazar - React Grocery & Organic Food Store e-commerce Template"
+              "N23 Gujarati Basket - Online Store"
             }
           />
           <meta property="og:type" content="eCommerce Website" />
@@ -29,17 +29,17 @@ class MyDocument extends Document {
             property="og:description"
             content={
               setting?.meta_description ||
-              "React Grocery & Organic Food Store e-commerce Template"
+              "N23 Gujarati Basket Online Store"
             }
           />
           <meta
             name="keywords"
-            content={setting?.meta_keywords || "ecommenrce online store"}
+            content={setting?.meta_keywords || "ecommerce online store"}
           />
           <meta
             property="og:url"
             content={
-              setting?.meta_url || "https://kachabazar-store.vercel.app/"
+              setting?.meta_url || "https://www.n23gujaratibasket.com/"
             }
           />
           <meta
