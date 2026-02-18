@@ -11,6 +11,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^7.5.0",
+    "@capacitor/core": "^8.1.0",
+    "@capacitor/ios": "^8.1.0",
     "@headlessui/react": "^1.4.1",
     "@heroicons/react": "^1.0.5",
     "@next/eslint-plugin-next": "^12.0.0",
