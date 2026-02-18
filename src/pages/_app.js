@@ -53,7 +53,7 @@ function MyApp({ Component, pageProps }) {
           handlePageView();
 
           const handleRouteChange = (url) => {
-            handlePageView(`/${router.pathname}`, "Kachabazar");
+            handlePageView(`/${router.pathname}`, "N23 Gujarati Basket");
           };
 
           router.events.on("routeChangeComplete", handleRouteChange);
