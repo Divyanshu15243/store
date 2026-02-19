@@ -26,6 +26,8 @@ import useCheckoutSubmit from "@hooks/useCheckoutSubmit";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import SettingServices from "@services/SettingServices";
 import SwitchToggle from "@components/form/SwitchToggle";
+import SelectOption from "@components/form/SelectOption";
+import { SURAT_LOCATIONS, ZIP_CODES } from "@utils/locations";
 
 const Checkout = () => {
   const { t } = useTranslation();
@@ -172,15 +174,24 @@ const Checkout = () => {
                       </div>
 
                       <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                        <InputArea
-                          register={register}
+                        <Label
                           label={showingTranslateValue(
                             storeCustomizationSetting?.checkout?.city
                           )}
-                          name="city"
-                          type="text"
-                          placeholder="surat"
                         />
+                        <select
+                          {...register("city", {
+                            required: "City is required!",
+                          })}
+                          className="py-2 px-4 md:px-5 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
+                        >
+                          <option value="">Select City</option>
+                          {SURAT_LOCATIONS.map((location, index) => (
+                            <option key={index} value={location}>
+                              {location}
+                            </option>
+                          ))}
+                        </select>
                         <Error errorName={errors.city} />
                       </div>
 
@@ -198,15 +209,24 @@ const Checkout = () => {
                       </div>
 
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        <InputArea
-                          register={register}
+                        <Label
                           label={showingTranslateValue(
                             storeCustomizationSetting?.checkout?.zip_code
                           )}
-                          name="zipCode"
-                          type="text"
-                          placeholder="333333"
                         />
+                        <select
+                          {...register("zipCode", {
+                            required: "Zip code is required!",
+                          })}
+                          className="py-2 px-4 md:px-5 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
+                        >
+                          <option value="">Select Zip Code</option>
+                          {ZIP_CODES.map((zipCode, index) => (
+                            <option key={index} value={zipCode}>
+                              {zipCode}
+                            </option>
+                          ))}
+                        </select>
                         <Error errorName={errors.zipCode} />
                       </div>
                     </div>

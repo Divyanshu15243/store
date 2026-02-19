@@ -8,7 +8,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:mobile": "set NEXT_CONFIG_FILE=next.config.mobile.js && next build && npx cap sync",
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios",
+    "cap:sync": "npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.1.0",

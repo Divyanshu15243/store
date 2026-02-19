@@ -1,0 +1,27 @@
+export const SURAT_LOCATIONS = [
+  "Begampura",
+  "Salabatpura",
+  "Rustampura",
+  "Sagrampura",
+  "Bhagal",
+  "Kaskiwad",
+  "Varyali Bazar",
+  "Saiyedpura",
+  "Nawabwade",
+  "Muglisara",
+  "Mahidarpura",
+  "Zampabazar",
+  "Indarpura",
+  "Bhavaiwad",
+  "Nanpura",
+  "Navsari Bazar",
+  "Gopipura",
+  "Shahapur",
+  "Rampura",
+  "Adajanpatiya",
+  "Chawta Bazar",
+  "Chowk Bazar",
+  "Gale Mandi",
+];
+
+export const ZIP_CODES = ["395003", "395009"];
