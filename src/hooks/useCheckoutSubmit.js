@@ -31,7 +31,7 @@ const useCheckoutSubmit = (storeSetting) => {
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [isCheckoutSubmit, setIsCheckoutSubmit] = useState(false);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
-  const [useExistingAddress, setUseExistingAddress] = useState(false);
+  const [useExistingAddress, setUseExistingAddress] = useState(true);
   const [isCouponAvailable, setIsCouponAvailable] = useState(false);
 
   const router = useRouter();
@@ -341,7 +341,7 @@ const useCheckoutSubmit = (storeSetting) => {
       setValue("address", address.address);
       setValue("contact", address.contact);
       // setValue("email", address.email);
-      setValue("city", address.city);
+      setValue("city", "Surat");
       setValue("country", address.country);
       setValue("zipCode", address.zipCode);
     } else {

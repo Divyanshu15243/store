@@ -16,12 +16,12 @@ class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <link rel="icon" href={setting?.favicon || "/favicon.png"} />
+          <link rel="icon" href={setting?.favicon || "/siteicon.svg"} />
           <meta
             property="og:title"
             content={
               setting?.meta_title ||
-              "N23 Gujarati Basket - Online Store"
+              "N23 Gujarati Basket"
             }
           />
           <meta property="og:type" content="eCommerce Website" />

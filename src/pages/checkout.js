@@ -143,7 +143,7 @@ const Checkout = () => {
                           )}
                           name="contact"
                           type="tel"
-                          placeholder="+91 9876543211"
+                          placeholder="Enter a number"
                         />
 
                         <Error errorName={errors.contact} />
@@ -174,28 +174,39 @@ const Checkout = () => {
                       </div>
 
                       <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                        <Label
+                        <InputArea
+                          register={register}
                           label={showingTranslateValue(
                             storeCustomizationSetting?.checkout?.city
                           )}
+                          name="city"
+                          type="text"
+                          placeholder="Surat"
+                          value="Surat"
+                          readOnly={true}
                         />
+                        <Error errorName={errors.city} />
+                      </div>
+
+                      <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                        <Label label="Area" />
                         <select
-                          {...register("city", {
-                            required: "City is required!",
+                          {...register("area", {
+                            required: "Area is required!",
                           })}
                           className="py-2 px-4 md:px-5 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
                         >
-                          <option value="">Select City</option>
+                          <option value="">Select Area</option>
                           {SURAT_LOCATIONS.map((location, index) => (
                             <option key={index} value={location}>
                               {location}
                             </option>
                           ))}
                         </select>
-                        <Error errorName={errors.city} />
+                        <Error errorName={errors.area} />
                       </div>
 
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                      <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <InputArea
                           register={register}
                           label={showingTranslateValue(
@@ -208,7 +219,7 @@ const Checkout = () => {
                         <Error errorName={errors.country} />
                       </div>
 
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                      <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <Label
                           label={showingTranslateValue(
                             storeCustomizationSetting?.checkout?.zip_code

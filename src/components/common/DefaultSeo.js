@@ -11,7 +11,7 @@ const DefaultSeo = () => {
     <NextSeo
       title={
         globalSetting?.meta_title ||
-        "N23 Gujarati Basket - Online Store"
+        "N23 Gujarati Basket"
       }
       openGraph={{
         type: "website",
@@ -19,7 +19,7 @@ const DefaultSeo = () => {
         url: globalSetting?.meta_url || "https://www.n23gujaratibasket.com/",
         site_name:
           globalSetting?.meta_title ||
-          "N23 Gujarati Basket - Online Store",
+          "N23 Gujarati Basket",
       }}
       twitter={{
         handle: "@handle",

@@ -11,10 +11,12 @@ const withPWA = require("next-pwa")({
   disable: true, // Disable PWA for mobile build
 });
 
+/** @type {import('next').NextConfig} */
 module.exports = withPWA({
   reactStrictMode: true,
-  output: 'export',
+  output: "export",
   trailingSlash: true,
+  turbopack: {},
   images: {
     unoptimized: true,
     remotePatterns: [

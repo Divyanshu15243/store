@@ -85,6 +85,14 @@ const NavbarPromo = () => {
                     as="nav"
                     className="md:flex space-x-10 items-center"
                   >
+                    <Link
+                      href="/"
+                      onClick={() => setIsLoading(!isLoading)}
+                      className="font-serif py-2 text-sm font-medium hover:text-emerald-600"
+                    >
+                      Home
+                    </Link>
+
                     {storeCustomizationSetting?.navbar
                       ?.categories_menu_status && (
                       <Popover className="relative font-serif">
@@ -110,7 +118,7 @@ const NavbarPromo = () => {
                           leaveFrom="opacity-100 translate-y-0"
                           leaveTo="opacity-0 translate-y-1"
                         >
-                          <Popover.Panel className="absolute z-10 -ml-1 mt-1 transform w-screen max-w-xs c-h-65vh bg-white">
+                          <Popover.Panel className="absolute z-10 -ml-1 mt-1 transform w-screen max-w-md h-96 bg-white">
                             <div className="rounded-md shadow-lg ring-1 ring-black ring-opacity-5 overflow-y-scroll flex-grow scrollbar-hide w-full h-full">
                               <Category />
                             </div>

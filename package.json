@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "build:mobile": "set NEXT_CONFIG_FILE=next.config.mobile.js && next build && npx cap sync",
+    "build:production": "build-production.bat",
     "open:android": "npx cap open android",
     "open:ios": "npx cap open ios",
     "cap:sync": "npx cap sync"
