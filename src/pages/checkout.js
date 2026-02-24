@@ -181,9 +181,7 @@ const Checkout = () => {
                           )}
                           name="city"
                           type="text"
-                          placeholder="Surat"
-                          value="Surat"
-                          readOnly={true}
+                          placeholder="City"
                         />
                         <Error errorName={errors.city} />
                       </div>
