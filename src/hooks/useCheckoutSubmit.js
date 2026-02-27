@@ -78,6 +78,25 @@ const useCheckoutSubmit = (storeSetting) => {
     setValue("email", userInfo?.email);
   }, [isCouponApplied]);
 
+  // Auto-fill address fields on page load if user has shipping address
+  useEffect(() => {
+    if (hasShippingAddress && useExistingAddress && data) {
+      const address = data;
+      const nameParts = address?.name?.split(" ");
+      const firstName = nameParts[0];
+      const lastName = nameParts?.length > 1 ? nameParts[nameParts?.length - 1] : "";
+
+      setValue("firstName", firstName);
+      setValue("lastName", lastName);
+      setValue("address", address.address);
+      setValue("contact", address.contact);
+      setValue("city", address.city || "Surat");
+      setValue("area", address.area);
+      setValue("country", address.country);
+      setValue("zipCode", address.zipCode);
+    }
+  }, [hasShippingAddress, data, useExistingAddress]);
+
   //remove coupon if total value less then minimum amount of coupon
   useEffect(() => {
     if (minimumAmount - discountAmount > total || isEmpty) {
@@ -128,6 +147,7 @@ const useCheckoutSubmit = (storeSetting) => {
         address: data.address,
         country: data.country,
         city: data.city,
+        area: data.area,
         zipCode: data.zipCode,
       };
 
@@ -342,6 +362,7 @@ const useCheckoutSubmit = (storeSetting) => {
       setValue("contact", address.contact);
       // setValue("email", address.email);
       setValue("city", "Surat");
+      setValue("area", address.area);
       setValue("country", address.country);
       setValue("zipCode", address.zipCode);
     } else {
@@ -351,6 +372,7 @@ const useCheckoutSubmit = (storeSetting) => {
       setValue("contact");
       // setValue("email");
       setValue("city");
+      setValue("area");
       setValue("country");
       setValue("zipCode");
     }
