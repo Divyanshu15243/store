@@ -340,7 +340,7 @@ const Checkout = () => {
                           <InputPayment
                             setShowCard={setShowCard}
                             register={register}
-                            name={t("common:creditCard")}
+                            name={t("creditCard")}
                             value="Card"
                             Icon={ImCreditCard}
                           />
@@ -393,7 +393,7 @@ const Checkout = () => {
                               height={10}
                             />{" "}
                             <span className="ml-2">
-                              {t("common:processing")}
+                              {t("processing")}
                             </span>
                           </span>
                         ) : (
@@ -455,7 +455,7 @@ const Checkout = () => {
                         <input
                           ref={couponRef}
                           type="text"
-                          placeholder={t("common:couponCode")}
+                          placeholder={t("couponCode")}
                           className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-emerald-500 placeholder-gray-500 placeholder-opacity-75"
                         />
                         {isCouponAvailable ? (
