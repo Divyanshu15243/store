@@ -231,7 +231,7 @@ const Dashboard = ({ title, description, children }) => {
                       <Card
                         title="Referral Earnings"
                         Icon={FiGift}
-                        quantity={`₹${data?.referralEarnings || 0}`}
+                        quantity={`₹${parseFloat(data?.referralEarnings || 0).toFixed(2)}`}
                         className="text-purple-600 bg-purple-200"
                       />
                     </div>
@@ -268,7 +268,7 @@ const Dashboard = ({ title, description, children }) => {
                               Wallet Balance:
                             </p>
                             <p className="text-2xl font-bold text-emerald-600">
-                              ₹{customerData.walletBalance || 0}
+                              ₹{parseFloat(customerData.walletBalance || 0).toFixed(2)}
                             </p>
                           </div>
                           <p className="text-xs text-gray-500">

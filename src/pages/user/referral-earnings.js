@@ -42,7 +42,7 @@ const ReferralEarnings = () => {
               </h2>
               <div className="mb-4 p-4 bg-emerald-50 rounded-md">
                 <p className="text-sm text-gray-600">
-                  Total Earnings: <span className="text-xl font-bold text-emerald-600">₹{data?.totalEarnings || 0}</span>
+                  Total Earnings: <span className="text-xl font-bold text-emerald-600">₹{parseFloat(data?.totalEarnings || 0).toFixed(2)}</span>
                 </p>
               </div>
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -109,12 +109,12 @@ const ReferralEarnings = () => {
                               </td>
                               <td className="px-5 py-3 leading-6 text-center whitespace-nowrap">
                                 <span className="text-sm font-medium">
-                                  ₹{order.total}
+                                  ₹{parseFloat(order.total || 0).toFixed(2)}
                                 </span>
                               </td>
                               <td className="px-5 py-3 leading-6 text-right whitespace-nowrap">
                                 <span className="text-sm font-bold text-emerald-600">
-                                  ₹{order.referralCommission || 0}
+                                  ₹{parseFloat(order.referralCommission || 0).toFixed(2)}
                                 </span>
                               </td>
                             </tr>

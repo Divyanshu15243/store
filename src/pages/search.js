@@ -50,7 +50,7 @@ const Search = ({ products, attributes }) => {
                   </h2>
                 </div>
               ) : (
-                <div className="flex justify-between my-3 bg-orange-100 border border-gray-100 rounded p-3">
+                <div className="hidden justify-between my-3 bg-orange-100 border border-gray-100 rounded p-3">
                   <h6 className="text-sm font-serif">
                     {t("totalI")}{" "}
                     <span className="font-bold">{productData?.length}</span>{" "}
