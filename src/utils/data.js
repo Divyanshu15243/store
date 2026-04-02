@@ -124,15 +124,15 @@ const ctaCardData = [
   {
     id: 2,
     title: "Taste of",
-    subTitle: "Fish & Meat",
-    image: "/cta/cta-bg-2.jpg",
+    subTitle: "Sweet & Creamy",
+    image: "/cta/cta-bg-23.jpg",
     url: "/search?Category=fish--meat",
   },
   {
     id: 3,
     title: "Taste of",
     subTitle: "Bread & Bakery",
-    image: "/cta/cta-bg-3.jpg",
+    image: "/cta/cta-bg-33.jpg",
     url: "/search?Category=biscuits--cakes",
   },
 ];
