@@ -123,17 +123,17 @@ const CategoryCarousel = () => {
                   }
                   className="text-center cursor-pointer p-3 bg-white rounded-lg"
                 >
-                  <div className="bg-white p-2 mx-auto w-10 h-10 rounded-full shadow-md">
-                    <div className="relative w-6 h-8">
+                  <div className="bg-white p-2 mx-auto w-16 h-16 rounded-full shadow-md flex items-center justify-center">
+                    <div className="relative w-12 h-12">
                       <Image
                         src={
                           category?.icon ||
                           "https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
                         }
                         alt="category"
-                        width={40}
-                        height={40}
-                        className="object-fill"
+                        width={48}
+                        height={48}
+                        className="object-contain"
                       />
                     </div>
                   </div>
