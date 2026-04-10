@@ -1,4 +1,5 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { FiLock, FiMail, FiEye, FiEyeOff } from "react-icons/fi";
 import { useState } from "react";
 
@@ -119,4 +120,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default dynamic(() => Promise.resolve(Login), { ssr: false });

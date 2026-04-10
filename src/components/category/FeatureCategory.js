@@ -38,14 +38,14 @@ const FeatureCategory = () => {
       {loading ? (
         <CMSkeleton count={10} height={20} error={error} loading={loading} />
       ) : (
-        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6">
+        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-px">
           {data && data.length > 0 ? (
             data.flatMap((parent) => {
               if (!parent.children || parent.children.length === 0) return [];
               
               return parent.children.map((category) => (
                 <li className="group" key={category._id}>
-                  <div className="flex w-full h-full border border-gray-100 shadow-sm bg-white p-4 cursor-pointer transition duration-200 ease-linear transform group-hover:shadow-lg">
+                  <div className="flex w-full h-full border border-gray-100 shadow-sm bg-white p-3 cursor-pointer transition duration-200 ease-linear transform group-hover:shadow-lg min-h-[70px]">
                     <div className="flex items-center w-full">
                       <div className="flex-shrink-0">
                         <Image
@@ -64,7 +64,7 @@ const FeatureCategory = () => {
                               showingTranslateValue(category.name)
                             )
                           }
-                          className="text-sm text-gray-600 font-medium leading-tight line-clamp-1 group-hover:text-orange-500 cursor-pointer"
+                          className="text-sm text-gray-600 font-medium leading-snug whitespace-normal break-words group-hover:text-orange-500 cursor-pointer"
                         >
                           {showingTranslateValue(category.name)}
                         </h3>
@@ -82,7 +82,7 @@ const FeatureCategory = () => {
                                       showingTranslateValue(child.name)
                                     )
                                   }
-                                  className="flex items-center font-serif text-xs text-gray-400 cursor-pointer"
+                                  className="flex items-center font-serif text-xs text-gray-400 cursor-pointer whitespace-normal break-words"
                                 >
                                   <span className="text-xs text-gray-400">
                                     <IoChevronForwardSharp />

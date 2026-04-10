@@ -1,4 +1,5 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import PhoneInput, { formatPhoneNumberIntl } from "react-phone-number-input";
 import phone from "phone";
 import { Controller } from "react-hook-form";
@@ -134,4 +135,4 @@ const PhoneSignup = () => {
   );
 };
 
-export default PhoneSignup;
+export default dynamic(() => Promise.resolve(PhoneSignup), { ssr: false });

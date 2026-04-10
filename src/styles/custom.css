@@ -313,6 +313,8 @@ p:not(:last-of-type) {
 .category-slider .swiper-button-next {
   display: none;
 }
+.category-slider .swiper-slide { height: auto !important; }
+
 .category-slider button {
   width: 30px;
   height: 30px;
@@ -1525,3 +1527,4 @@ p:not(:last-of-type) {
   opacity: 1;
   color: var(--PhoneInputCountrySelectArrow-color--focus);
 } */
+

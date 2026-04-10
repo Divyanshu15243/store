@@ -62,35 +62,26 @@ const CategoryCarousel = () => {
         allowTouchMove={false}
         loop={true}
         breakpoints={{
-          // when window width is >= 640px
           375: {
             width: 375,
-            slidesPerView: 2,
+            slidesPerView: 3,
           },
-          // when window width is >= 768px
           414: {
             width: 414,
             slidesPerView: 3,
           },
-          // when window width is >= 768px
           660: {
             width: 660,
             slidesPerView: 4,
           },
-
-          // when window width is >= 768px
           768: {
             width: 768,
             slidesPerView: 6,
           },
-
-          // when window width is >= 768px
           991: {
             width: 991,
             slidesPerView: 8,
           },
-
-          // when window width is >= 768px
           1140: {
             width: 1140,
             slidesPerView: 9,
@@ -105,7 +96,7 @@ const CategoryCarousel = () => {
           },
         }}
         modules={[Autoplay, Navigation, Pagination, Controller]}
-        className="mySwiper category-slider my-10"
+        className="mySwiper category-slider my-6"
       >
         {loading ? (
           <Loading loading={loading} />
@@ -121,7 +112,7 @@ const CategoryCarousel = () => {
                   onClick={() =>
                     handleCategoryClick(category?._id, category.name)
                   }
-                  className="text-center cursor-pointer p-3 bg-white rounded-lg"
+                  className="text-center cursor-pointer p-2 bg-white rounded-lg flex flex-col items-center"
                 >
                   <div className="bg-white p-2 mx-auto w-16 h-16 rounded-full shadow-md flex items-center justify-center">
                     <div className="relative w-12 h-12">
@@ -138,7 +129,7 @@ const CategoryCarousel = () => {
                     </div>
                   </div>
 
-                  <h3 className="text-xs text-gray-600 mt-2 font-serif group-hover:text-emerald-500">
+                  <h3 className="text-xs text-gray-600 mt-2 font-serif group-hover:text-emerald-500 w-full leading-tight break-words whitespace-normal line-clamp-2 min-h-[2.5rem]">
                     {showingTranslateValue(category?.name)}
                   </h3>
                 </div>

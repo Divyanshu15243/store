@@ -1,4 +1,5 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { FiLock, FiMail, FiUser, FiGift } from "react-icons/fi";
 
 //internal import
@@ -150,4 +151,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default dynamic(() => Promise.resolve(SignUp), { ssr: false });
