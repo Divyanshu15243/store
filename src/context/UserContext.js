@@ -26,6 +26,7 @@ function reducer(state, action) {
       return { ...state, userInfo: action.payload };
 
     case "USER_LOGOUT":
+      Cookies.remove("userInfo");
       return {
         ...state,
         userInfo: null,

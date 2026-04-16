@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Cookies from "js-cookie";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { FiUser, FiPhone, FiMail, FiGift, FiShield, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 
@@ -135,6 +136,7 @@ const SignUp = () => {
         referralCode: formData.referralCode || undefined,
       });
       dispatch({ type: "USER_LOGIN", payload: res });
+      Cookies.set("userInfo", JSON.stringify(res), { expires: 7 });
       notifySuccess("Account created successfully!");
       router.push("/user/dashboard");
     } catch (err) {

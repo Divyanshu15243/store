@@ -1,8 +1,9 @@
 import dynamic from "next/dynamic";
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Cookies from "js-cookie";
 import { signIn } from "next-auth/react";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { FiPhone, FiShield, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
@@ -33,29 +34,23 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        { size: "invisible" }
-      );
-    }
-  }, []);
-
   // ── OTP handlers ──
   const handleSendOtp = async (e) => {
     e.preventDefault();
     if (phone.length < 13) return notifyError("Enter a valid 10-digit number!");
     setLoading(true);
     try {
-      const appVerifier = window.recaptchaVerifier;
-      const result = await signInWithPhoneNumber(auth, phone, appVerifier);
+      // lazy-init so recaptcha-container div is guaranteed to exist in DOM
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "invisible" });
+      }
+      const result = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
       setConfirmationResult(result);
       setStep("otp");
       notifySuccess("OTP sent successfully!");
     } catch (err) {
       notifyError(err?.message || "Failed to send OTP");
+      window.recaptchaVerifier?.clear?.();
       window.recaptchaVerifier = null;
     }
     setLoading(false);
@@ -69,10 +64,18 @@ const Login = () => {
       await confirmationResult.confirm(otp);
       const res = await CustomerServices.otpLogin({ phone });
       dispatch({ type: "USER_LOGIN", payload: res });
+      Cookies.set("userInfo", JSON.stringify(res), { expires: 7 });
       notifySuccess("Login successful!");
       router.push(redirectUrl ? "/checkout" : "/user/dashboard");
     } catch (err) {
-      notifyError(err?.response?.data?.message || err?.message || "Invalid OTP");
+      const msg = err?.response?.data?.message || err?.message || "Invalid OTP";
+      if (err?.response?.status === 404) {
+        notifyError("Phone number not registered! Please sign up first.");
+        setStep("phone");
+        setOtp("");
+      } else {
+        notifyError(msg);
+      }
     }
     setLoading(false);
   };

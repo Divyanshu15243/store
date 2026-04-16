@@ -1,16 +1,19 @@
+import Cookies from "js-cookie";
 import { useSession } from "next-auth/react";
 
 const getUserSession = () => {
   const { data } = useSession();
 
-  // console.log(
-  //   "data",
-  //   data,
-  //   dayjs(data?.expires).format("DD, MMM, YYYY, h:mm A")
-  // );
+  // NextAuth session (email/OAuth login)
+  if (data?.user) return data.user;
 
-  const userInfo = data?.user || null;
-  return userInfo;
+  // Cookie-based session (OTP login / OTP signup)
+  try {
+    const cookie = Cookies.get("userInfo");
+    if (cookie) return JSON.parse(cookie);
+  } catch (_) {}
+
+  return null;
 };
 
 export { getUserSession };
