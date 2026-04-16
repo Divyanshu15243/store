@@ -37,6 +37,7 @@ const Dashboard = ({ title, description, children }) => {
   const { isLoading, setIsLoading, currentPage } = useContext(SidebarContext);
   const {
     state: { userInfo },
+    dispatch,
   } = useContext(UserContext);
   const { data: session } = useSession();
   const [copied, setCopied] = useState(false);
@@ -66,10 +67,7 @@ const Dashboard = ({ title, description, children }) => {
     queryKey: ["customer", currentUser?.email || currentUser?._id],
     queryFn: async () => {
       const userId = currentUser?._id || currentUser?.id;
-      console.log("Current user object:", currentUser);
-      console.log("Fetching customer with ID:", userId);
       const result = await CustomerServices.getCustomerById(userId);
-      console.log("Customer API result:", result);
       return result;
     },
     enabled: !!(currentUser?._id || currentUser?.id),
@@ -77,7 +75,9 @@ const Dashboard = ({ title, description, children }) => {
   });
 
   const handleLogOut = () => {
-    signOut();
+    signOut({ redirect: false });
+    dispatch({ type: "USER_LOGOUT" });
+    Cookies.remove("userInfo");
     Cookies.remove("couponInfo");
     router.push("/");
   };
