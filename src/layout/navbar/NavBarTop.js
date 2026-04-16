@@ -1,52 +1,48 @@
 import Link from "next/link";
-// import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import dynamic from "next/dynamic";
+import { useContext, useEffect } from "react";
 import { IoLockOpenOutline } from "react-icons/io5";
 import { FiPhoneCall, FiUser } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
-import { useEffect } from "react";
 
 //internal import
 import { getUserSession } from "@lib/auth";
 import useGetSetting from "@hooks/useGetSetting";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import { UserContext } from "@context/UserContext";
+import { setToken } from "@services/httpServices";
 
 const NavBarTop = () => {
   const userInfo = getUserSession();
   const router = useRouter();
+  const { dispatch } = useContext(UserContext);
 
   const { storeCustomizationSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
 
+  // Set axios token for OTP/cookie-based users + check expiry
+  useEffect(() => {
+    if (userInfo?.token) {
+      setToken(userInfo.token);
+      try {
+        const decoded = jwtDecode(userInfo.token);
+        if (new Date() >= new Date(decoded?.exp * 1000)) {
+          handleLogOut();
+        }
+      } catch (_) {}
+    }
+  }, [userInfo?.token]);
+
   const handleLogOut = () => {
-    signOut();
+    signOut({ redirect: false });
+    dispatch({ type: "USER_LOGOUT" });
+    Cookies.remove("userInfo");
     Cookies.remove("couponInfo");
     router.push("/");
   };
-
-  useEffect(() => {
-    if (userInfo) {
-      const decoded = jwtDecode(userInfo?.token);
-
-      const expireTime = new Date(decoded?.exp * 1000);
-      const currentTime = new Date();
-
-      // console.log(
-      //   // decoded,
-      //   "expire",
-      //   dayjs(expireTime).format("DD, MMM, YYYY, h:mm A"),
-      //   "currentTime",
-      //   dayjs(currentTime).format("DD, MMM, YYYY, h:mm A")
-      // );
-      if (currentTime >= expireTime) {
-        console.log("token expire, should sign out now..");
-        handleLogOut();
-      }
-    }
-  }, [userInfo]);
 
   return (
     <>
@@ -104,7 +100,7 @@ const NavBarTop = () => {
                 )}
               </Link>
               <span className="mx-2">|</span>
-              {userInfo?.email ? (
+              {userInfo?.name || userInfo?.email ? (
                 <button
                   onClick={handleLogOut}
                   className="flex items-center font-medium hover:text-emerald-600"
@@ -114,7 +110,7 @@ const NavBarTop = () => {
                   </span>
                   {showingTranslateValue(
                     storeCustomizationSetting?.navbar?.logout
-                  )}
+                  ) || "Logout"}
                 </button>
               ) : (
                 <Link
@@ -124,10 +120,9 @@ const NavBarTop = () => {
                   <span className="mr-1">
                     <FiUser />
                   </span>
-
                   {showingTranslateValue(
                     storeCustomizationSetting?.navbar?.login
-                  )}
+                  ) || "Login"}
                 </Link>
               )}
             </div>
