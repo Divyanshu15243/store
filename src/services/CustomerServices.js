@@ -5,6 +5,14 @@ const CustomerServices = {
     return requests.post("/customer/login", body);
   },
 
+  otpLogin: async (body) => {
+    return requests.post("/customer/otp-login", body);
+  },
+
+  checkExists: async (body) => {
+    return requests.post("/customer/check-exists", body);
+  },
+
   verifyEmailAddress: async (body) => {
     return requests.post("/customer/verify-email", body);
   },

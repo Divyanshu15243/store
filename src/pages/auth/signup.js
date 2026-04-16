@@ -1,148 +1,307 @@
-import Link from "next/link";
 import dynamic from "next/dynamic";
-import { FiLock, FiMail, FiUser, FiGift } from "react-icons/fi";
+import { useEffect, useState, useContext } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { FiUser, FiPhone, FiMail, FiGift, FiShield, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 
-//internal import
+// internal import
 import Layout from "@layout/Layout";
-import Error from "@components/form/Error";
-import InputArea from "@components/form/InputArea";
-import useLoginSubmit from "@hooks/useLoginSubmit";
-import BottomNavigation from "@components/login/BottomNavigation";
+import { auth } from "@lib/firebase";
+import { notifyError, notifySuccess } from "@utils/toast";
+import CustomerServices from "@services/CustomerServices";
+import { UserContext } from "@context/UserContext";
 
 const SignUp = () => {
-  const { handleSubmit, submitHandler, register, errors, loading } =
-    useLoginSubmit();
+  const router = useRouter();
+  const { dispatch } = useContext(UserContext);
 
-  // console.log("errors", errors);
+  const [step, setStep] = useState("form"); // "form" | "otp"
+  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [otp, setOtp] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "+91",
+    email: "",
+    referralCode: "",
+  });
+
+  // field-level errors
+  const [fieldErrors, setFieldErrors] = useState({
+    phone: "",
+    email: "",
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !window.recaptchaVerifierSignup) {
+      window.recaptchaVerifierSignup = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container-signup",
+        {
+          size: "invisible",
+          callback: () => {},
+          "expired-callback": () => { window.recaptchaVerifierSignup = null; },
+        }
+      );
+      window.recaptchaVerifierSignup.render();
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "phone") {
+      setFormData({ ...formData, phone: "+91" + value.replace(/[^0-9]/g, "") });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+    // clear field error on change
+    if (name === "phone" || name === "email") {
+      setFieldErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // check on blur
+  const handleBlurCheck = async (field) => {
+    const value = field === "phone" ? formData.phone : formData.email;
+    if (!value || (field === "phone" && value === "+91")) return;
+    setChecking(true);
+    try {
+      const res = await CustomerServices.checkExists({
+        [field]: value,
+      });
+      if (field === "phone" && res.phoneExists) {
+        setFieldErrors((prev) => ({
+          ...prev,
+          phone: "This phone number is already registered.",
+        }));
+      }
+      if (field === "email" && res.emailExists) {
+        setFieldErrors((prev) => ({
+          ...prev,
+          email: "This email is already registered.",
+        }));
+      }
+    } catch (_) {}
+    setChecking(false);
+  };
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    const { name, phone, email } = formData;
+    if (!name) return notifyError("Please enter your full name!");
+    if (phone.length < 13) return notifyError("Enter a valid 10-digit phone number!");
+    if (!email) return notifyError("Please enter your email!");
+    if (fieldErrors.phone || fieldErrors.email) return notifyError("Please fix the errors before continuing!");
+
+    setLoading(true);
+    try {
+      // final check before sending OTP
+      const check = await CustomerServices.checkExists({ phone, email });
+      if (check.phoneExists) {
+        setFieldErrors((prev) => ({ ...prev, phone: "This phone number is already registered." }));
+        setLoading(false);
+        return;
+      }
+      if (check.emailExists) {
+        setFieldErrors((prev) => ({ ...prev, email: "This email is already registered." }));
+        setLoading(false);
+        return;
+      }
+
+      const appVerifier = window.recaptchaVerifierSignup;
+      const result = await signInWithPhoneNumber(auth, phone, appVerifier);
+      setConfirmationResult(result);
+      setStep("otp");
+      notifySuccess("OTP sent to " + phone);
+    } catch (err) {
+      notifyError(err?.message || "Failed to send OTP");
+      window.recaptchaVerifierSignup = null;
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!otp) return notifyError("Enter the OTP!");
+    setLoading(true);
+    try {
+      await confirmationResult.confirm(otp);
+      const res = await CustomerServices.otpLogin({
+        phone: formData.phone,
+        name: formData.name,
+        email: formData.email,
+        referralCode: formData.referralCode || undefined,
+      });
+      dispatch({ type: "USER_LOGIN", payload: res });
+      notifySuccess("Account created successfully!");
+      router.push("/user/dashboard");
+    } catch (err) {
+      notifyError(err?.response?.data?.message || err?.message || "Invalid OTP");
+    }
+    setLoading(false);
+  };
+
+  const FieldError = ({ message }) => (
+    <div className="flex items-center gap-1.5 mt-1.5 p-2 bg-red-50 border border-red-200 rounded-md">
+      <FiAlertCircle className="text-red-500 shrink-0" size={15} />
+      <p className="text-xs text-red-600 font-medium">{message}</p>
+      <Link href="/auth/login" className="ml-auto text-xs text-emerald-600 underline font-semibold whitespace-nowrap">
+        Login instead →
+      </Link>
+    </div>
+  );
 
   return (
-    <Layout title="Signup" description="this is sign up page">
+    <Layout title="Sign Up" description="Create your account">
       <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
         <div className="py-4 flex flex-col lg:flex-row w-full">
           <div className="w-full sm:p-5 lg:p-8">
-            <div className="mx-auto text-left justify-center rounded-md w-full max-w-lg px-4 py-8 sm:p-10 overflow-hidden align-middle transition-all transform bg-white shadow-xl rounded-2x">
-              <div className="overflow-hidden mx-auto">
-                <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold font-serif">Signing Up</h2>
-                  <p className="text-sm text-gray-500 mt-2 mb-8 sm:mb-10">
-                    Create an account by sign up with provider or email,
-                    password
-                  </p>
-                </div>
-                <form
-                  onSubmit={handleSubmit(submitHandler)}
-                  className="flex flex-col justify-center mb-6"
-                >
-                  <div className="grid grid-cols-1 gap-5">
-                    <div className="form-group">
-                      <InputArea
-                        register={register}
-                        label="Name"
+            <div className="mx-auto w-full max-w-lg px-4 py-8 sm:p-10 bg-white shadow-xl rounded-2xl">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold font-serif">Sign Up</h2>
+                <p className="text-sm text-gray-500 mt-2 mb-4">
+                  {step === "form"
+                    ? "Create your account with phone OTP"
+                    : "Enter the OTP sent to " + formData.phone}
+                </p>
+              </div>
+
+              {step === "form" ? (
+                <form onSubmit={handleSendOtp} className="grid grid-cols-1 gap-4">
+
+                  {/* Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 text-gray-400"><FiUser size={18} /></span>
+                      <input
                         name="name"
                         type="text"
-                        placeholder="Full Name"
-                        Icon={FiUser}
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Your full name"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-emerald-500"
+                        required
                       />
-
-                      <Error errorName={errors.name} />
                     </div>
+                  </div>
 
-                    <div className="form-group">
-                      <InputArea
-                        register={register}
-                        label="Email"
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <div className={`relative flex items-center border rounded-md overflow-hidden focus-within:border-emerald-500 ${fieldErrors.phone ? "border-red-400" : "border-gray-200"}`}>
+                      <span className="flex items-center gap-1 px-3 py-3 bg-gray-50 border-r border-gray-200 text-sm font-medium text-gray-700 select-none">
+                        <FiPhone size={15} /> +91
+                      </span>
+                      <input
+                        name="phone"
+                        type="tel"
+                        value={formData.phone.replace("+91", "")}
+                        onChange={handleChange}
+                        onBlur={() => handleBlurCheck("phone")}
+                        placeholder="9876543210"
+                        maxLength={10}
+                        className="flex-1 px-3 py-3 text-sm outline-none bg-white"
+                        required
+                      />
+                      {checking && <span className="pr-3 text-xs text-gray-400">checking...</span>}
+                      {!checking && !fieldErrors.phone && formData.phone.length === 13 && (
+                        <FiCheckCircle className="mr-3 text-emerald-500" size={16} />
+                      )}
+                    </div>
+                    {fieldErrors.phone && <FieldError message={fieldErrors.phone} />}
+                    {!fieldErrors.phone && <p className="text-xs text-gray-400 mt-1">Enter 10-digit mobile number</p>}
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div className={`relative border rounded-md focus-within:border-emerald-500 ${fieldErrors.email ? "border-red-400" : "border-gray-200"}`}>
+                      <span className="absolute left-3 top-3 text-gray-400"><FiMail size={18} /></span>
+                      <input
                         name="email"
                         type="email"
-                        placeholder="Email"
-                        Icon={FiMail}
+                        value={formData.email}
+                        onChange={handleChange}
+                        onBlur={() => handleBlurCheck("email")}
+                        placeholder="you@email.com"
+                        className="w-full pl-10 pr-4 py-3 text-sm outline-none bg-white rounded-md"
+                        required
                       />
-                      <Error errorName={errors.email} />
                     </div>
-                    <div className="form-group">
-                      <InputArea
-                        register={register}
-                        label="Password"
-                        name="password"
-                        type="password"
-                        placeholder="Password"
-                        Icon={FiLock}
-                        pattern={
-                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/
-                        }
-                        patternMessage={[
-                          "1. Password must be at least 8 characters long.",
-                          "2. Password must contain at least one uppercase letter.",
-                          "3. Password must contain at least one lowercase letter.",
-                          "4. Password must contain at least one number.",
-                          "5. Password must contain at least one special character.",
-                        ]}
-                      />
-                      <Error errorName={errors.password} />
-                    </div>
+                    {fieldErrors.email && <FieldError message={fieldErrors.email} />}
+                  </div>
 
-                    <div className="form-group">
-                      <InputArea
-                        register={register}
-                        label="Referral Code (Optional)"
+                  {/* Referral Code */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Referral Code <span className="text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 text-gray-400"><FiGift size={18} /></span>
+                      <input
                         name="referralCode"
                         type="text"
+                        value={formData.referralCode}
+                        onChange={handleChange}
                         placeholder="Enter referral code"
-                        Icon={FiGift}
-                        required={false}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-emerald-500"
                       />
-                      <Error errorName={errors.referralCode} />
                     </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex ms-auto">
-                        {/* <Link
-                          href="/auth/phone-signup"
-                          className="text-end text-sm text-heading ps-3 underline hover:no-underline focus:outline-none"
-                        >
-                          Sign Up with Number?
-                        </Link> */}
-                        <Link
-                          href="/auth/login"
-                          className="text-end text-sm text-heading ps-3 underline hover:no-underline focus:outline-none"
-                        >
-                          Already have account?
-                        </Link>
-                      </div>
-                    </div>
-                    {loading ? (
-                      <button
-                        disabled={loading}
-                        type="submit"
-                        className="md:text-sm leading-5 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-medium text-center justify-center border-0 border-transparent rounded-md placeholder-white focus-visible:outline-none focus:outline-none bg-emerald-500 text-white px-5 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 hover:text-white hover:bg-emerald-600 h-12 mt-1 text-sm lg:text-sm w-full sm:w-auto"
-                      >
-                        <img
-                          src="/loader/spinner.gif"
-                          alt="Loading"
-                          width={20}
-                          height={10}
-                        />
-                        <span className="font-serif ml-2 font-light">
-                          Processing
-                        </span>
-                      </button>
-                    ) : (
-                      <button
-                        disabled={loading}
-                        type="submit"
-                        className="w-full text-center py-3 rounded bg-emerald-500 text-white hover:bg-emerald-600 transition-all focus:outline-none my-1"
-                      >
-                        Register
-                      </button>
-                    )}
                   </div>
+
+                  <div id="recaptcha-container-signup" />
+
+                  <button
+                    type="submit"
+                    disabled={loading || !!fieldErrors.phone || !!fieldErrors.email}
+                    className="w-full py-3 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? "Sending OTP..." : "Send OTP"}
+                  </button>
+
+                  <p className="text-center text-sm text-gray-500">
+                    Already have an account?{" "}
+                    <Link href="/auth/login" className="text-emerald-600 underline font-medium">Login</Link>
+                  </p>
                 </form>
-                <BottomNavigation
-                  desc
-                  route={"/auth/login"}
-                  pageName={"Login"}
-                  loginTitle="Sign Up"
-                />
-              </div>
+              ) : (
+                <form onSubmit={handleVerifyOtp} className="grid grid-cols-1 gap-5">
+                  <p className="text-sm text-center text-gray-500">
+                    OTP sent to <span className="font-semibold text-gray-700">{formData.phone}</span>
+                  </p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Enter OTP</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 text-gray-400"><FiShield size={18} /></span>
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
+                        placeholder="• • • • • •"
+                        maxLength={6}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-center text-xl font-bold tracking-widest focus:outline-none focus:border-emerald-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-all disabled:opacity-50"
+                  >
+                    {loading ? "Verifying..." : "Verify & Create Account"}
+                  </button>
+
+                  <button type="button" onClick={() => { setStep("form"); setOtp(""); }}
+                    className="text-sm text-center text-gray-500 underline">
+                    Go back
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
