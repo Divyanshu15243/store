@@ -23,6 +23,8 @@ const initialState = {
 function reducer(state, action) {
   switch (action.type) {
     case "USER_LOGIN":
+      Cookies.set("userInfo", JSON.stringify(action.payload), { expires: 7 });
+      if (action.payload?.token) setToken(action.payload.token);
       return { ...state, userInfo: action.payload };
 
     case "USER_LOGOUT":
@@ -49,7 +51,16 @@ export const UserProvider = ({ children }) => {
     if (status === "authenticated" && session?.user) {
       setToken(session.user.token);
     } else if (status === "unauthenticated") {
-      setToken(null);
+      // set token from cookie for OTP login users
+      const cookie = Cookies.get("userInfo");
+      if (cookie) {
+        try {
+          const user = JSON.parse(cookie);
+          if (user?.token) setToken(user.token);
+        } catch (_) {}
+      } else {
+        setToken(null);
+      }
     }
   }, [session, status]);
 
