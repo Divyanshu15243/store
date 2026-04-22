@@ -4,7 +4,7 @@ import { useCart } from "react-use-cart";
 import { IoBagCheckOutline, IoClose, IoBagHandle } from "react-icons/io5";
 
 //internal import
-import { getUserSession } from "@lib/auth";
+import { useUserSession } from "@lib/auth";
 import CartItem from "@components/cart/CartItem";
 import { SidebarContext } from "@context/SidebarContext";
 import useUtilsFunction from "@hooks/useUtilsFunction";
@@ -14,7 +14,7 @@ const Cart = () => {
   const { isEmpty, items, cartTotal } = useCart();
   const { closeCartDrawer } = useContext(SidebarContext);
   const { currency } = useUtilsFunction();
-  const userInfo = getUserSession();
+  const userInfo = useUserSession();
 
   // console.log("userInfo", userInfo);
 

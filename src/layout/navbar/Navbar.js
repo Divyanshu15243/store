@@ -9,7 +9,7 @@ import { FiShoppingCart, FiUser, FiBell } from "react-icons/fi";
 import useTranslation from "next-translate/useTranslation";
 
 //internal import
-import { getUserSession } from "@lib/auth";
+import { useUserSession } from "@lib/auth";
 import useGetSetting from "@hooks/useGetSetting";
 import { handleLogEvent } from "src/lib/analytics";
 import NavbarPromo from "@layout/navbar/NavbarPromo";
@@ -23,7 +23,7 @@ const Navbar = () => {
   const { totalItems } = useCart();
   const router = useRouter();
 
-  const userInfo = getUserSession();
+  const userInfo = useUserSession();
 
   const { storeCustomizationSetting } = useGetSetting();
 
@@ -61,17 +61,14 @@ const Navbar = () => {
               className="mr-3 lg:mr-12 xl:mr-12 hidden md:hidden lg:block"
             >
               <div className="relative w-32 h-10">
-                <Image
-                  width="0"
-                  height="0"
-                  sizes="100vw"
+                <img
                   className="w-full h-auto"
-                  priority
                   src={
                     storeCustomizationSetting?.navbar?.logo ||
                     "/logo/logo-light.svg"
                   }
                   alt="logo"
+                  onError={(e) => { e.target.src = "/logo/logo-light.svg"; }}
                 />
               </div>
             </Link>
@@ -129,12 +126,13 @@ const Navbar = () => {
                     href="/user/dashboard"
                     className="relative top-1 w-6 h-6"
                   >
-                    <Image
+                    <img
                       width={29}
                       height={29}
                       src={userInfo?.image}
                       alt="user"
-                      className="bg-white rounded-full"
+                      className="bg-white rounded-full w-7 h-7 object-cover"
+                      onError={(e) => { e.target.style.display = "none"; }}
                     />
                   </Link>
                 ) : userInfo?.name ? (

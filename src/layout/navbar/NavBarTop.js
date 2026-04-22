@@ -9,14 +9,14 @@ import { signOut } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
 
 //internal import
-import { getUserSession } from "@lib/auth";
+import { useUserSession } from "@lib/auth";
 import useGetSetting from "@hooks/useGetSetting";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import { UserContext } from "@context/UserContext";
 import { setToken } from "@services/httpServices";
 
 const NavBarTop = () => {
-  const userInfo = getUserSession();
+  const userInfo = useUserSession();
   const router = useRouter();
   const { dispatch } = useContext(UserContext);
 

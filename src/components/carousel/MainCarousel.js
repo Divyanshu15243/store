@@ -132,13 +132,13 @@ const MainCarousel = () => {
             key={i + 1}
           >
             <div className="text-sm text-gray-600 hover:text-emerald-dark">
-              <Image
+              <img
                 width={950}
                 height={400}
                 src={item.image || "/slider/slider-1.jpg"}
-                alt={item.title}
-                className="object-cover"
-                priority
+                alt={item.title || "slider"}
+                className="object-cover w-full"
+                onError={(e) => { e.target.src = "/slider/slider-1.jpg"; }}
               />
             </div>
             <div className="absolute top-0 left-0 z-10 p-r-16 flex-col flex w-full h-full place-items-start justify-center">

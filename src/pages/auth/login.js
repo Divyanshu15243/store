@@ -94,7 +94,11 @@ const Login = () => {
       if (result?.error) {
         notifyError(result.error);
       } else if (result?.ok) {
-        router.push(redirectUrl ? "/checkout" : result.url);
+        // fetch user data and save to cookie so getUserSession works everywhere
+        const res = await CustomerServices.loginCustomer({ email, password });
+        Cookies.set("userInfo", JSON.stringify(res), { expires: 7 });
+        dispatch({ type: "USER_LOGIN", payload: res });
+        router.push(redirectUrl ? "/checkout" : "/user/dashboard");
       }
     } catch (err) {
       notifyError(err?.message);

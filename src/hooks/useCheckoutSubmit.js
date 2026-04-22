@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 
 //internal import
-import { getUserSession } from "@lib/auth";
+import { useUserSession } from "@lib/auth";
 import { UserContext } from "@context/UserContext";
 import OrderServices from "@services/OrderServices";
 import useUtilsFunction from "./useUtilsFunction";
@@ -17,8 +17,9 @@ import CouponServices from "@services/CouponServices";
 import { notifyError, notifySuccess } from "@utils/toast";
 import CustomerServices from "@services/CustomerServices";
 import NotificationServices from "@services/NotificationServices";
+import SettingServices from "@services/SettingServices";
 
-const useCheckoutSubmit = (storeSetting) => {
+const useCheckoutSubmit = () => {
   const { dispatch } = useContext(UserContext);
 
   const [error, setError] = useState("");
@@ -41,24 +42,28 @@ const useCheckoutSubmit = (storeSetting) => {
   const [Razorpay] = useRazorpay();
   const { isEmpty, emptyCart, items, cartTotal } = useCart();
 
-  const userInfo = getUserSession();
+  const userInfo = useUserSession();
   const { showDateFormat, currency, globalSetting } = useUtilsFunction();
 
+  // fetch store settings for razorpay key
+  const { data: storeSetting } = useQuery({
+    queryKey: ["storeSetting"],
+    queryFn: async () => await SettingServices.getStoreSetting(),
+    staleTime: 4 * 60 * 1000,
+  });
+
+  const userId = userInfo?._id || userInfo?.id;
+
   const { data, isLoading } = useQuery({
-    queryKey: ["shippingAddress", { id: userInfo?.id }],
+    queryKey: ["shippingAddress", { id: userId }],
     queryFn: async () =>
-      await CustomerServices.getShippingAddress({
-        userId: userInfo?.id,
-      }),
+      await CustomerServices.getShippingAddress({ userId }),
     select: (data) => data?.shippingAddress,
+    enabled: !!userId,
   });
 
   const hasShippingAddress =
     !isLoading && data && Object.keys(data)?.length > 0;
-
-  // console.log("storeSetting", storeSetting);
-
-  // console.log("res", data);
 
   const {
     register,
@@ -70,21 +75,23 @@ const useCheckoutSubmit = (storeSetting) => {
   useEffect(() => {
     if (Cookies.get("couponInfo")) {
       const coupon = JSON.parse(Cookies.get("couponInfo"));
-      // console.log('coupon information',coupon)
       setCouponInfo(coupon);
       setDiscountPercentage(coupon.discountType);
       setMinimumAmount(coupon.minimumAmount);
     }
-    setValue("email", userInfo?.email);
-  }, [isCouponApplied]);
+    // only set email if it exists (OTP users may not have one)
+    if (userInfo?.email) {
+      setValue("email", userInfo.email);
+    }
+  }, [isCouponApplied, userInfo?.email]);
 
   // Auto-fill address fields on page load if user has shipping address
   useEffect(() => {
     if (hasShippingAddress && useExistingAddress && data) {
       const address = data;
-      const nameParts = address?.name?.split(" ");
-      const firstName = nameParts[0];
-      const lastName = nameParts?.length > 1 ? nameParts[nameParts?.length - 1] : "";
+      const nameParts = (address?.name || "").split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
 
       setValue("firstName", firstName);
       setValue("lastName", lastName);
@@ -97,7 +104,7 @@ const useCheckoutSubmit = (storeSetting) => {
     }
   }, [hasShippingAddress, data, useExistingAddress]);
 
-  //remove coupon if total value less then minimum amount of coupon
+  // remove coupon if total less than minimum amount
   useEffect(() => {
     if (minimumAmount - discountAmount > total || isEmpty) {
       setDiscountPercentage(0);
@@ -105,45 +112,33 @@ const useCheckoutSubmit = (storeSetting) => {
     }
   }, [minimumAmount, total]);
 
-  //calculate total and discount value
-  //calculate total and discount value
+  // calculate total and discount
   useEffect(() => {
     const discountProductTotal = items?.reduce(
       (preValue, currentValue) => preValue + currentValue.itemTotal,
       0
     );
 
-    let totalValue = 0;
     const subTotal = parseFloat(cartTotal + Number(shippingCost)).toFixed(2);
-    const discountAmount =
+    const discountAmt =
       discountPercentage?.type === "fixed"
         ? discountPercentage?.value
         : discountProductTotal * (discountPercentage?.value / 100);
 
-    const discountAmountTotal = discountAmount ? discountAmount : 0;
-
-    totalValue = Number(subTotal) - discountAmountTotal;
-
+    const discountAmountTotal = discountAmt ? discountAmt : 0;
     setDiscountAmount(discountAmountTotal);
-
-    // console.log("total", totalValue);
-
-    setTotal(totalValue);
+    setTotal(Number(subTotal) - discountAmountTotal);
   }, [cartTotal, shippingCost, discountPercentage]);
 
   const submitHandler = async (data) => {
-    // console.log("data", data);
-    // return;
     try {
-      // dispatch({ type: "SAVE_SHIPPING_ADDRESS", payload: data });
-      // Cookies.set("shippingAddress", JSON.stringify(data));
       setIsCheckoutSubmit(true);
       setError("");
 
       const userDetails = {
-        name: `${data.firstName} ${data.lastName}`,
+        name: `${data.firstName} ${data.lastName}`.trim(),
         contact: data.contact,
-        email: data.email,
+        email: data.email || userInfo?.email || "",
         address: data.address,
         country: data.country,
         city: data.city,
@@ -163,14 +158,14 @@ const useCheckoutSubmit = (storeSetting) => {
         total: total,
       };
 
-      await CustomerServices.addShippingAddress({
-        userId: userInfo?.id,
-        shippingAddressData: {
-          ...userDetails,
-        },
-      });
+      // save shipping address
+      if (userId) {
+        await CustomerServices.addShippingAddress({
+          userId,
+          shippingAddressData: { ...userDetails },
+        });
+      }
 
-      // Handle payment based on method
       switch (data.paymentMethod) {
         case "Card":
           await handlePaymentWithStripe(orderInfo);
@@ -190,24 +185,19 @@ const useCheckoutSubmit = (storeSetting) => {
     }
   };
 
-  // console.log("globalSetting", globalSetting?.email_to_customer);
-
   const handleOrderSuccess = async (orderResponse, orderInfo) => {
     try {
       const notificationInfo = {
         orderId: orderResponse?._id,
-        message: `${
-          orderResponse?.user_info?.name
-        } placed an order of ${parseFloat(orderResponse?.total).toFixed(2)}!`,
-        image:
-          "https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png",
+        message: `${orderResponse?.user_info?.name} placed an order of ${parseFloat(orderResponse?.total).toFixed(2)}!`,
+        image: "https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png",
       };
 
       const updatedData = {
         ...orderResponse,
         date: showDateFormat(orderResponse.createdAt),
         company_info: {
-          currency: currency,
+          currency,
           vat_number: globalSetting?.vat_number,
           company: globalSetting?.company_name,
           address: globalSetting?.address,
@@ -219,173 +209,115 @@ const useCheckoutSubmit = (storeSetting) => {
       };
 
       if (globalSetting?.email_to_customer) {
-        // Trigger email in the background
-        OrderServices.sendEmailInvoiceToCustomer(updatedData).catch(
-          (emailErr) => {
-            console.error("Failed to send email invoice:", emailErr.message);
-          }
+        OrderServices.sendEmailInvoiceToCustomer(updatedData).catch((e) =>
+          console.error("Failed to send email invoice:", e.message)
         );
       }
 
-      // Add notification
       await NotificationServices.addNotification(notificationInfo);
 
-      // Proceed with order success
       router.push(`/order/${orderResponse?._id}`);
-      notifySuccess(
-        "Your Order Confirmed! The invoice will be emailed to you shortly."
-      );
+      notifySuccess("Your Order Confirmed! The invoice will be emailed to you shortly.");
       Cookies.remove("couponInfo");
       emptyCart();
       setIsCheckoutSubmit(false);
     } catch (err) {
-      console.error("Order success handling error:", err.message);
       throw new Error(err.message);
     }
   };
 
-  //handle cash payment
   const handleCashPayment = async (orderInfo) => {
-    try {
-      const orderResponse = await OrderServices.addOrder(orderInfo);
-      await handleOrderSuccess(orderResponse, orderInfo);
-    } catch (err) {
-      console.error("Cash payment error:", err.message);
-      throw new Error(err.message);
-    }
+    const orderResponse = await OrderServices.addOrder(orderInfo);
+    await handleOrderSuccess(orderResponse, orderInfo);
   };
 
-  //handle stripe payment
   const handlePaymentWithStripe = async (orderInfo) => {
-    try {
-      if (!stripe || !elements) {
-        throw new Error("Stripe is not initialized");
-      }
+    if (!stripe || !elements) throw new Error("Stripe is not initialized");
 
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: "card",
-        card: elements.getElement(CardElement),
-      });
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: elements.getElement(CardElement),
+    });
 
-      if (error || !paymentMethod) {
-        throw new Error(error?.message || "Stripe payment failed");
-      }
+    if (error || !paymentMethod) throw new Error(error?.message || "Stripe payment failed");
 
-      const order = {
-        ...orderInfo,
-        cardInfo: paymentMethod,
-      };
+    const stripeInfo = await OrderServices.createPaymentIntent({
+      ...orderInfo,
+      cardInfo: paymentMethod,
+    });
 
-      const stripeInfo = await OrderServices.createPaymentIntent(order);
-      // console.log("res", stripeInfo, "order", order);
-      stripe.confirmCardPayment(stripeInfo?.client_secret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-        },
-      });
+    stripe.confirmCardPayment(stripeInfo?.client_secret, {
+      payment_method: { card: elements.getElement(CardElement) },
+    });
 
-      // console.log("stripeInfo", stripeInfo);
-
-      const orderData = { ...orderInfo, cardInfo: stripeInfo };
-      const orderResponse = await OrderServices.addOrder(orderData);
-      await handleOrderSuccess(orderResponse, orderInfo);
-    } catch (err) {
-      // Instead of just throwing the error, rethrow it so that it can be caught by the main submit handler
-      throw new Error(err.message); // Ensure the error is propagated properly
-    }
+    const orderResponse = await OrderServices.addOrder({ ...orderInfo, cardInfo: stripeInfo });
+    await handleOrderSuccess(orderResponse, orderInfo);
   };
 
-  //handle razorpay payment
   const handlePaymentWithRazorpay = async (orderInfo) => {
-    try {
-      const { amount, id, currency } =
-        await OrderServices.createOrderByRazorPay({
-          amount: Math.round(orderInfo.total).toString(),
-        });
+    const { amount, id, currency: rzpCurrency } =
+      await OrderServices.createOrderByRazorPay({
+        amount: Math.round(orderInfo.total).toString(),
+      });
 
-      const options = {
-        key: storeSetting?.razorpay_id,
-        amount,
-        currency,
-        name: "Kachabazar Store",
-        description: "This is the total cost of your purchase",
-        order_id: id,
-        handler: async (response) => {
-          const razorpayDetails = {
-            amount: orderInfo.total,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpayOrderId: response.razorpay_order_id,
-            razorpaySignature: response.razorpay_signature,
-          };
+    const options = {
+      key: storeSetting?.razorpay_id,
+      amount,
+      currency: rzpCurrency,
+      name: "N23 Gujarati Basket",
+      description: "This is the total cost of your purchase",
+      order_id: id,
+      handler: async (response) => {
+        const razorpayDetails = {
+          amount: orderInfo.total,
+          razorpayPaymentId: response.razorpay_payment_id,
+          razorpayOrderId: response.razorpay_order_id,
+          razorpaySignature: response.razorpay_signature,
+        };
+        // fixed: removed stray `car` variable
+        const orderData = { ...orderInfo, razorpay: razorpayDetails };
+        const orderResponse = await OrderServices.addRazorpayOrder(orderData);
+        await handleOrderSuccess(orderResponse, orderInfo);
+      },
+      prefill: {
+        name: orderInfo?.user_info?.name || "Customer",
+        email: orderInfo?.user_info?.email || "customer@example.com",
+        contact: orderInfo?.user_info?.contact || "0000000000",
+      },
+      theme: { color: "#10b981" },
+    };
 
-          const orderData = { ...orderInfo, razorpay: razorpayDetails, car };
-          const orderResponse = await OrderServices.addRazorpayOrder(orderData);
-          await handleOrderSuccess(orderResponse, orderInfo);
-        },
-        prefill: {
-          name: orderInfo?.user_info?.name || "Customer",
-          email: orderInfo?.user_info?.email || "customer@example.com",
-          contact: orderInfo?.user_info?.contact || "0000000000",
-        },
-        theme: { color: "#10b981" },
-      };
-
-      const rzpay = new Razorpay(options);
-      rzpay.open();
-    } catch (err) {
-      console.error("Razorpay payment error:", err.message);
-      throw new Error(err.message);
-    }
+    const rzpay = new Razorpay(options);
+    rzpay.open();
   };
 
-  const handleShippingCost = (value) => {
-    // console.log("handleShippingCost", value);
-    setShippingCost(Number(value));
-  };
+  const handleShippingCost = (value) => setShippingCost(Number(value));
 
-  //handle default shipping address
   const handleDefaultShippingAddress = (value) => {
-    // console.log("handle default shipping", value);
     setUseExistingAddress(value);
-    if (value) {
-      const address = data;
-      const nameParts = address?.name?.split(" "); // Split the name into parts
-      const firstName = nameParts[0]; // First name is the first element
-      const lastName =
-        nameParts?.length > 1 ? nameParts[nameParts?.length - 1] : ""; // Last name is the last element, if it exists
-      // console.log("address", address.name.split(" "), "value", value);
-
-      setValue("firstName", firstName);
-      setValue("lastName", lastName);
-
-      setValue("address", address.address);
-      setValue("contact", address.contact);
-      // setValue("email", address.email);
-      setValue("city", "Surat");
-      setValue("area", address.area);
-      setValue("country", address.country);
-      setValue("zipCode", address.zipCode);
+    if (value && data) {
+      const nameParts = (data?.name || "").split(" ");
+      setValue("firstName", nameParts[0] || "");
+      setValue("lastName", nameParts.length > 1 ? nameParts[nameParts.length - 1] : "");
+      setValue("address", data.address);
+      setValue("contact", data.contact);
+      setValue("city", data.city || "Surat");
+      setValue("area", data.area);
+      setValue("country", data.country);
+      setValue("zipCode", data.zipCode);
     } else {
-      setValue("firstName");
-      setValue("lastName");
-      setValue("address");
-      setValue("contact");
-      // setValue("email");
-      setValue("city");
-      setValue("area");
-      setValue("country");
-      setValue("zipCode");
+      ["firstName", "lastName", "address", "contact", "city", "area", "country", "zipCode"]
+        .forEach((f) => setValue(f, ""));
     }
   };
+
   const handleCouponCode = async (e) => {
     e.preventDefault();
-
     if (!couponRef.current.value) {
       notifyError("Please Input a Coupon Code!");
       return;
     }
     setIsCouponAvailable(true);
-
     try {
       const coupons = await CouponServices.getShowingCoupons();
       const result = coupons.filter(
@@ -393,33 +325,20 @@ const useCheckoutSubmit = (storeSetting) => {
       );
       setIsCouponAvailable(false);
 
-      if (result.length < 1) {
-        notifyError("Please Input a Valid Coupon!");
-        return;
-      }
-
-      if (dayjs().isAfter(dayjs(result[0]?.endTime))) {
-        notifyError("This coupon is not valid!");
-        return;
-      }
-
+      if (result.length < 1) return notifyError("Please Input a Valid Coupon!");
+      if (dayjs().isAfter(dayjs(result[0]?.endTime))) return notifyError("This coupon is not valid!");
       if (total < result[0]?.minimumAmount) {
-        notifyError(
-          `Minimum ${result[0].minimumAmount} USD required for Apply this coupon!`
-        );
-        return;
-      } else {
-        notifySuccess(
-          `Your Coupon ${result[0].couponCode} is Applied on ${result[0].productType}!`
-        );
-        setIsCouponApplied(true);
-        setMinimumAmount(result[0]?.minimumAmount);
-        setDiscountPercentage(result[0].discountType);
-        dispatch({ type: "SAVE_COUPON", payload: result[0] });
-        Cookies.set("couponInfo", JSON.stringify(result[0]));
+        return notifyError(`Minimum ${result[0].minimumAmount} required to apply this coupon!`);
       }
+
+      notifySuccess(`Coupon ${result[0].couponCode} applied!`);
+      setIsCouponApplied(true);
+      setMinimumAmount(result[0]?.minimumAmount);
+      setDiscountPercentage(result[0].discountType);
+      dispatch({ type: "SAVE_COUPON", payload: result[0] });
+      Cookies.set("couponInfo", JSON.stringify(result[0]));
     } catch (error) {
-      return notifyError(error.message);
+      notifyError(error.message);
     }
   };
 
@@ -436,6 +355,7 @@ const useCheckoutSubmit = (storeSetting) => {
     isEmpty,
     items,
     cartTotal,
+    currency,
     handleSubmit,
     submitHandler,
     handleShippingCost,
