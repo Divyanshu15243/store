@@ -8,16 +8,28 @@ import LoadingForSession from "@components/preloader/LoadingForSession";
 
 export const UserContext = createContext();
 
+const getCookie = (name) => {
+  if (typeof window === "undefined") return null;
+  try {
+    return Cookies.get(name) || null;
+  } catch (_) {
+    return null;
+  }
+};
+
 const initialState = {
-  userInfo: Cookies.get("userInfo")
-    ? JSON.parse(Cookies.get("userInfo"))
-    : null,
-  shippingAddress: Cookies.get("shippingAddress")
-    ? JSON.parse(Cookies.get("shippingAddress"))
-    : {},
-  couponInfo: Cookies.get("couponInfo")
-    ? JSON.parse(Cookies.get("couponInfo"))
-    : {},
+  userInfo: (() => {
+    const c = getCookie("userInfo");
+    try { return c ? JSON.parse(c) : null; } catch (_) { return null; }
+  })(),
+  shippingAddress: (() => {
+    const c = getCookie("shippingAddress");
+    try { return c ? JSON.parse(c) : {}; } catch (_) { return {}; }
+  })(),
+  couponInfo: (() => {
+    const c = getCookie("couponInfo");
+    try { return c ? JSON.parse(c) : {}; } catch (_) { return {}; }
+  })(),
 };
 
 function reducer(state, action) {

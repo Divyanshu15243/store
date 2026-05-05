@@ -21,6 +21,8 @@ import { SidebarProvider } from "@context/SidebarContext";
 import SettingServices from "@services/SettingServices";
 
 let persistor = persistStore(store);
+// initialize stripe promise once at module level (client only)
+const stripePromise = typeof window !== "undefined" ? getStripe() : null;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,12 +36,6 @@ const queryClient = new QueryClient({
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [storeSetting, setStoreSetting] = useState(null);
-  const [stripePromise, setStripePromise] = useState(null);
-
-  useEffect(() => {
-    // load stripe only after mount so backend is ready
-    getStripe().then((p) => { if (p) setStripePromise(p); });
-  }, []);
 
   useEffect(() => {
     const fetchStoreSettings = async () => {
