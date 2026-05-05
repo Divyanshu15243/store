@@ -21,8 +21,7 @@ import { SidebarProvider } from "@context/SidebarContext";
 import SettingServices from "@services/SettingServices";
 
 let persistor = persistStore(store);
-// initialize stripe promise once at module level (client only)
-const stripePromise = typeof window !== "undefined" ? getStripe() : null;
+let stripePromise = getStripe();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -85,7 +84,7 @@ function MyApp({ Component, pageProps }) {
             <Provider store={store}>
               <PersistGate loading={null} persistor={persistor}>
                 <SidebarProvider>
-                  <Elements stripe={stripePromise || null}>
+                  <Elements stripe={stripePromise}>
                     <CartProvider>
                       <DefaultSeo />
                       <Component {...pageProps} />
