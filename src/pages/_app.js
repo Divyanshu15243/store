@@ -21,7 +21,6 @@ import { SidebarProvider } from "@context/SidebarContext";
 import SettingServices from "@services/SettingServices";
 
 let persistor = persistStore(store);
-let stripePromise = getStripe();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +34,12 @@ const queryClient = new QueryClient({
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [storeSetting, setStoreSetting] = useState(null);
+  const [stripePromise, setStripePromise] = useState(null);
+
+  useEffect(() => {
+    // load stripe only after mount so backend is ready
+    getStripe().then((p) => { if (p) setStripePromise(p); });
+  }, []);
 
   useEffect(() => {
     const fetchStoreSettings = async () => {
@@ -84,7 +89,7 @@ function MyApp({ Component, pageProps }) {
             <Provider store={store}>
               <PersistGate loading={null} persistor={persistor}>
                 <SidebarProvider>
-                  <Elements stripe={stripePromise}>
+                  <Elements stripe={stripePromise || null}>
                     <CartProvider>
                       <DefaultSeo />
                       <Component {...pageProps} />
