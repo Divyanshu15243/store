@@ -182,6 +182,8 @@ const Checkout = () => {
                           name="city"
                           type="text"
                           placeholder="City"
+                          defaultValue="Surat"
+                          readOnly={true}
                         />
                         <Error errorName={errors.city} />
                       </div>
@@ -213,6 +215,8 @@ const Checkout = () => {
                           name="country"
                           type="text"
                           placeholder="India"
+                          defaultValue="India"
+                          readOnly={true}
                         />
                         <Error errorName={errors.country} />
                       </div>

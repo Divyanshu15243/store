@@ -97,9 +97,9 @@ const useCheckoutSubmit = () => {
       setValue("lastName", lastName);
       setValue("address", address.address);
       setValue("contact", address.contact);
-      setValue("city", address.city || "Surat");
+      setValue("city", "Surat");
       setValue("area", address.area);
-      setValue("country", address.country);
+      setValue("country", "India");
       setValue("zipCode", address.zipCode);
     }
   }, [hasShippingAddress, data, useExistingAddress]);
@@ -140,8 +140,8 @@ const useCheckoutSubmit = () => {
         contact: data.contact,
         email: data.email || userInfo?.email || "",
         address: data.address,
-        country: data.country,
-        city: data.city,
+        country: "India",
+        city: "Surat",
         area: data.area,
         zipCode: data.zipCode,
       };
@@ -301,9 +301,9 @@ const useCheckoutSubmit = () => {
       setValue("lastName", nameParts.length > 1 ? nameParts[nameParts.length - 1] : "");
       setValue("address", data.address);
       setValue("contact", data.contact);
-      setValue("city", data.city || "Surat");
+      setValue("city", "Surat");
       setValue("area", data.area);
-      setValue("country", data.country);
+      setValue("country", "India");
       setValue("zipCode", data.zipCode);
     } else {
       ["firstName", "lastName", "address", "contact", "city", "area", "country", "zipCode"]
