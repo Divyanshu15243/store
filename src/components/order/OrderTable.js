@@ -12,7 +12,7 @@ const OrderTable = ({ data, currency }) => {
             {i + 1}{" "}
           </th>
           <td className="px-6 py-1 whitespace-nowrap font-normal text-gray-500">
-            {item.title}
+            {typeof item.title === "object" ? (item.title?.en || Object.values(item.title)[0] || "") : item.title}
           </td>
           <td className="px-6 py-1 whitespace-nowrap font-bold text-center">
             {item.quantity}{" "}

@@ -151,7 +151,6 @@ const Login = () => {
                             type="tel"
                             value={phone.replace("+91", "")}
                             onChange={(e) => setPhone("+91" + e.target.value.replace(/[^0-9]/g, ""))}
-                            placeholder="9876543210"
                             maxLength={10}
                             className="flex-1 px-3 py-3 text-sm outline-none bg-white"
                             required
@@ -183,7 +182,6 @@ const Login = () => {
                             type="text"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
-                            placeholder="• • • • • •"
                             maxLength={6}
                             className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-center text-xl font-bold tracking-widest focus:outline-none focus:border-emerald-500"
                             required
@@ -216,7 +214,6 @@ const Login = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@email.com"
                         className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-emerald-500"
                         required
                       />
@@ -231,7 +228,6 @@ const Login = () => {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
                         className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-emerald-500"
                         required
                       />

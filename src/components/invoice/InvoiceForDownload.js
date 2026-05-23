@@ -361,7 +361,7 @@ const InvoiceForDownload = ({
                   <Text style={styles.tableCell}>{i + 1} </Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{item.title} </Text>
+                  <Text style={styles.tableCell}>{typeof item.title === "object" ? (item.title?.en || Object.values(item.title)[0] || "") : (item.title || "")} </Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>
