@@ -151,7 +151,10 @@ const useCheckoutSubmit = () => {
         shippingOption: data.shippingOption,
         paymentMethod: data.paymentMethod,
         status: "Pending",
-        cart: items,
+        cart: items.map((item) => ({
+          ...item,
+          productId: item._id, // preserve product MongoDB _id before Mongoose overwrites it
+        })),
         subTotal: cartTotal,
         shippingCost: shippingCost,
         discount: discountAmount,

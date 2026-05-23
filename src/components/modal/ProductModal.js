@@ -62,8 +62,7 @@ const ProductModal = ({
           sku,
           productId,
           image,
-          profit,
-          ...rest
+          ...rest  // profit kept in rest
         }) => ({
           ...rest,
         })

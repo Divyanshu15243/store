@@ -77,8 +77,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
           sku,
           productId,
           image,
-          profit,
-          ...rest
+          ...rest  // profit is kept in rest now
         }) => ({ ...rest })
       );
       // console.log("res", res);
