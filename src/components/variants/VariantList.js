@@ -14,11 +14,8 @@ const VariantList = ({
 
   const handleChangeVariant = (v) => {
     setValue(v);
-    setSelectVariant({
-      ...selectVariant,
-      [att]: v,
-    });
-    setSelectVa({ [att]: v });
+    setSelectVa((prev) => ({ ...prev, [att]: v }));
+    setSelectVariant((prev) => ({ ...prev, [att]: v }));
   };
   // console.log("option", );
 

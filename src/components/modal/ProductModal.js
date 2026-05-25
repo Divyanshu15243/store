@@ -43,111 +43,58 @@ const ProductModal = ({
   const [selectVariant, setSelectVariant] = useState({});
   const [selectVa, setSelectVa] = useState({});
   const [variantTitle, setVariantTitle] = useState([]);
-  const [variants, setVariants] = useState([]);
+
+  const getAttribKeys = (variant) => {
+    const { originalPrice, price, discount, quantity, barcode, sku, productId, image, profit, _id, ...rest } = variant;
+    return rest;
+  };
+
+  const setVariantData = (v) => {
+    setImg(v?.image);
+    setStock(v?.quantity);
+    const p = getNumber(v?.price);
+    const op = getNumber(v?.originalPrice);
+    setPrice(p);
+    setOriginalPrice(op);
+    setDiscount(getNumber(((op - p) / op) * 100));
+  };
 
   useEffect(() => {
-    // console.log('value', value, product);
-    if (value) {
-      const result = product?.variants?.filter((variant) =>
-        Object.keys(selectVa).every((k) => selectVa[k] === variant[k])
-      );
-
-      const res = result?.map(
-        ({
-          originalPrice,
-          price,
-          discount,
-          quantity,
-          barcode,
-          sku,
-          productId,
-          image,
-          ...rest  // profit kept in rest
-        }) => ({
-          ...rest,
-        })
-      );
-
-      const filterKey = Object.keys(Object.assign({}, ...res));
-      const selectVar = filterKey?.reduce(
-        (obj, key) => ({ ...obj, [key]: selectVariant[key] }),
-        {}
-      );
-      const newObj = Object.entries(selectVar).reduce(
-        (a, [k, v]) => (v ? ((a[k] = v), a) : a),
-        {}
-      );
-
-      const result2 = result?.find((v) =>
-        Object.keys(newObj).every((k) => newObj[k] === v[k])
-      );
-
-      // console.log("result2", result2);
-
-      if (result.length <= 0 || result2 === undefined) return setStock(0);
-
-      setVariants(result);
-      setSelectVariant(result2);
-      setSelectVa(result2);
-      setImg(result2?.image);
-      setStock(result2?.quantity);
-      const price = getNumber(result2?.price);
-      const originalPrice = getNumber(result2?.originalPrice);
-      const discountPercentage = getNumber(
-        ((originalPrice - price) / originalPrice) * 100
-      );
-      setDiscount(getNumber(discountPercentage));
-      setPrice(price);
-      setOriginalPrice(originalPrice);
-    } else if (product?.variants?.length > 0) {
-      const result = product?.variants?.filter((variant) =>
-        Object.keys(selectVa).every((k) => selectVa[k] === variant[k])
-      );
-
-      setVariants(result);
-      setStock(product.variants[0]?.quantity);
-      setSelectVariant(product.variants[0]);
-      setSelectVa(product.variants[0]);
-      setImg(product.variants[0]?.image);
-      const price = getNumber(product.variants[0]?.price);
-      const originalPrice = getNumber(product.variants[0]?.originalPrice);
-      const discountPercentage = getNumber(
-        ((originalPrice - price) / originalPrice) * 100
-      );
-      setDiscount(getNumber(discountPercentage));
-      setPrice(price);
-      setOriginalPrice(originalPrice);
-    } else {
+    if (!product?.variants?.length) {
       setStock(product?.stock);
-      setImg(product?.image[0]);
-      const price = getNumber(product?.prices?.price);
-      const originalPrice = getNumber(product?.prices?.originalPrice);
-      const discountPercentage = getNumber(
-        ((originalPrice - price) / originalPrice) * 100
-      );
-      setDiscount(getNumber(discountPercentage));
-      setPrice(price);
-      setOriginalPrice(originalPrice);
+      setImg(product?.image?.[0]);
+      const p = getNumber(product?.prices?.price);
+      const op = getNumber(product?.prices?.originalPrice);
+      setPrice(p);
+      setOriginalPrice(op);
+      setDiscount(getNumber(((op - p) / op) * 100));
+      return;
     }
-  }, [
-    product?.prices?.discount,
-    product?.prices?.originalPrice,
-    product?.prices?.price,
-    product?.stock,
-    product.variants,
-    selectVa,
-    selectVariant,
-    value,
-  ]);
-  // console.log("product", product);
+
+    if (Object.keys(selectVa).length === 0) {
+      const first = product.variants[0];
+      setSelectVariant(first);
+      setSelectVa(getAttribKeys(first));
+      setVariantData(first);
+      return;
+    }
+
+    const matched = product.variants.find((v) =>
+      Object.keys(selectVa).every((k) => selectVa[k] === v[k])
+    );
+
+    if (!matched) return setStock(0);
+
+    setSelectVariant(matched);
+    setVariantData(matched);
+  }, [product, selectVa]);
 
   useEffect(() => {
-    const res = Object.keys(Object.assign({}, ...product?.variants));
-
+    if (!product?.variants?.length) return;
+    const res = Object.keys(Object.assign({}, ...product.variants));
     const varTitle = attributes?.filter((att) => res.includes(att?._id));
-
-    setVariantTitle(varTitle?.sort());
-  }, [variants, attributes]);
+    setVariantTitle(varTitle);
+  }, [product?.variants, attributes]);
 
   const handleAddToCart = (p) => {
     if (p.variants.length === 1 && p.variants[0].quantity < 1)
