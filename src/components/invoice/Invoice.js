@@ -2,9 +2,15 @@ import dayjs from "dayjs";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-//internal import
 import OrderTable from "@components/order/OrderTable";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+
+const cleanTitle = (title) => {
+  const str = typeof title === "object"
+    ? (title?.en || title?.de || Object.values(title)[0] || "")
+    : (title || "");
+  return str.replace(/\s*\([a-f0-9]{24}\s*\/\s*[\d.]+\)/gi, "").trim();
+};
 
 const Invoice = ({ data, printRef, globalSetting, currency }) => {
   // console.log('invoice data',data)
@@ -53,6 +59,9 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
             <p className="text-sm text-gray-500">
               {globalSetting?.address ||
                 "Cecilia Chapman, 561-4535 Nulla LA, <br /> United States 96522"}
+              {globalSetting?.vat_number && (
+                <><br /><span className="font-semibold text-gray-600">GST No: {globalSetting.vat_number}</span></>
+              )}
             </p>
           </div>
         </div>

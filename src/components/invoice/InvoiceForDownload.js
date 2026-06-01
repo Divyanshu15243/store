@@ -279,6 +279,9 @@ const InvoiceForDownload = ({
                 INVOICE
               </Text>
               <Text style={styles.info}>Status : {data?.status}</Text>
+              {globalSetting?.vat_number && (
+                <Text style={styles.info}>GST No. : {globalSetting.vat_number}</Text>
+              )}
             </View>
             <View style={styles.topBg}>
               <Text
@@ -361,7 +364,7 @@ const InvoiceForDownload = ({
                   <Text style={styles.tableCell}>{i + 1} </Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{typeof item.title === "object" ? (item.title?.en || Object.values(item.title)[0] || "") : (item.title || "")} </Text>
+                  <Text style={styles.tableCell}>{((typeof item.title === "object" ? (item.title?.en || Object.values(item.title)[0] || "") : (item.title || "")).replace(/\s*\([a-f0-9]{24}\s*\/\s*[\d.]+\)/gi, "").trim())} </Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>
