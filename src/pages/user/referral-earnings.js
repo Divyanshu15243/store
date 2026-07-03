@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 //internal import
 import Dashboard from "@pages/user/dashboard";
 import OrderServices from "@services/OrderServices";
+import CustomerServices from "@services/CustomerServices";
 import Loading from "@components/preloader/Loading";
 import { SidebarContext } from "@context/SidebarContext";
 import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
@@ -21,6 +22,20 @@ const ReferralEarnings = () => {
     queryFn: async () => await OrderServices.getReferralEarnings(),
     retry: 1,
   });
+
+  const {
+    data: walletData,
+    error: walletError,
+    isLoading: walletLoading,
+  } = useQuery({
+    queryKey: ["walletTransactions"],
+    queryFn: async () => await CustomerServices.getWalletTransactions(),
+    retry: 1,
+  });
+
+  const payoutHistory = (walletData?.transactions || []).filter(
+    (t) => t.type === "withdrawal"
+  );
 
   useEffect(() => {
     setIsLoading(false);
@@ -115,6 +130,90 @@ const ReferralEarnings = () => {
                               <td className="px-5 py-3 leading-6 text-right whitespace-nowrap">
                                 <span className="text-sm font-bold text-emerald-600">
                                   ₹{parseFloat(order.referralCommission || 0).toFixed(2)}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <h2 className="text-xl font-serif font-semibold mb-5 mt-10">
+                Payment History
+              </h2>
+              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="align-middle inline-block border border-gray-100 rounded-md min-w-full pb-2 sm:px-6 lg:px-8">
+                  <div className="overflow-hidden border-b last:border-b-0 border-gray-100 rounded-md">
+                    {walletLoading ? (
+                      <CMSkeletonTwo
+                        count={20}
+                        width={100}
+                        error={walletError}
+                        loading={walletLoading}
+                      />
+                    ) : payoutHistory.length === 0 ? (
+                      <div className="text-center">
+                        <span className="flex justify-center my-30 pt-16 text-emerald-500 font-semibold text-6xl">
+                          <IoBagHandle />
+                        </span>
+                        <h2 className="font-medium text-md my-4 text-gray-600">
+                          No payments received yet!
+                        </h2>
+                      </div>
+                    ) : (
+                      <table className="table-auto min-w-full border border-gray-100 divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr className="bg-gray-100">
+                            <th
+                              scope="col"
+                              className="text-left text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
+                            >
+                              Date
+                            </th>
+                            <th
+                              scope="col"
+                              className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
+                            >
+                              Amount
+                            </th>
+                            <th
+                              scope="col"
+                              className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
+                            >
+                              NEFT / Txn Number
+                            </th>
+                            <th
+                              scope="col"
+                              className="text-right text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
+                            >
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {payoutHistory.map((txn) => (
+                            <tr key={txn._id}>
+                              <td className="px-5 py-3 leading-6 whitespace-nowrap">
+                                <span className="text-sm">
+                                  {new Date(txn.createdAt).toLocaleDateString()}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3 leading-6 text-center whitespace-nowrap">
+                                <span className="text-sm font-medium">
+                                  ₹{parseFloat(txn.amount || 0).toFixed(2)}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3 leading-6 text-center whitespace-nowrap">
+                                <span className="text-sm font-mono font-semibold text-emerald-600">
+                                  {txn.transactionNumber || "—"}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3 leading-6 text-right whitespace-nowrap">
+                                <span className="text-xs font-semibold uppercase text-emerald-600">
+                                  {txn.status}
                                 </span>
                               </td>
                             </tr>

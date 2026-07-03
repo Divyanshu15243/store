@@ -77,6 +77,10 @@ const CustomerServices = {
   updateBankDetails: async (id, bankDetails) => {
     return requests.put(`/customer/${id}`, { bankDetails });
   },
+
+  getWalletTransactions: async () => {
+    return requests.get(`/customer/wallet/transactions?limit=50`);
+  },
 };
 
 export default CustomerServices;

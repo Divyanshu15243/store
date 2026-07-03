@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import Image from "next/image";
 import useTranslation from "next-translate/useTranslation";
 
@@ -16,7 +16,6 @@ import CategoryCarousel from "@components/carousel/CategoryCarousel";
 const Search = ({ products, attributes }) => {
   const { t } = useTranslation();
   const { isLoading, setIsLoading } = useContext(SidebarContext);
-  const [visibleProduct, setVisibleProduct] = useState(18);
 
   useEffect(() => {
     setIsLoading(false);
@@ -80,7 +79,7 @@ const Search = ({ products, attributes }) => {
               ) : (
                 <>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
-                    {productData?.slice(0, visibleProduct).map((product, i) => (
+                    {productData?.map((product, i) => (
                       <ProductCard
                         key={i + 1}
                         product={product}
@@ -88,15 +87,6 @@ const Search = ({ products, attributes }) => {
                       />
                     ))}
                   </div>
-
-                  {productData?.length > visibleProduct && (
-                    <button
-                      onClick={() => setVisibleProduct((pre) => pre + 10)}
-                      className="w-auto mx-auto md:text-sm leading-5 flex items-center transition ease-in-out duration-300 font-medium text-center justify-center border-0 border-transparent rounded-md focus-visible:outline-none focus:outline-none bg-indigo-100 text-gray-700 px-5 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 hover:text-white hover:bg-emerald-600 h-12 mt-6 text-sm lg:text-sm"
-                    >
-                      {t("loadMoreBtn")}
-                    </button>
-                  )}
                 </>
               )}
             </div>
