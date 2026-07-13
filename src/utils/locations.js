@@ -23,6 +23,7 @@ export const SURAT_LOCATIONS = [
   "Chowk Bazar",
   "Gale Mandi",
   "Sodagarwad",
+  "Dumbhal",
 ];
 
-export const ZIP_CODES = ["395001", "395002", "395003", "395009"];
+export const ZIP_CODES = ["395001", "395002", "395003", "395009", "395010"];
