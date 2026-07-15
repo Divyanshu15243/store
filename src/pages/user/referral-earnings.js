@@ -144,6 +144,13 @@ const ReferralEarnings = () => {
               <h2 className="text-xl font-serif font-semibold mb-5 mt-10">
                 Payment History
               </h2>
+              {walletData?.walletBalance !== undefined && (
+                <div className="mb-4 p-4 bg-blue-50 rounded-md">
+                  <p className="text-sm text-gray-600">
+                    Current Wallet Balance: <span className="text-xl font-bold text-blue-600">₹{parseFloat(walletData.walletBalance || 0).toFixed(2)}</span>
+                  </p>
+                </div>
+              )}
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="align-middle inline-block border border-gray-100 rounded-md min-w-full pb-2 sm:px-6 lg:px-8">
                   <div className="overflow-hidden border-b last:border-b-0 border-gray-100 rounded-md">
