@@ -1,7 +1,6 @@
 import { useContext, useEffect } from "react";
 import { IoBagHandle } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 
 //internal import
 import Dashboard from "@pages/user/dashboard";
@@ -9,17 +8,10 @@ import OrderServices from "@services/OrderServices";
 import CustomerServices from "@services/CustomerServices";
 import Loading from "@components/preloader/Loading";
 import { SidebarContext } from "@context/SidebarContext";
-import { UserContext } from "@context/UserContext";
 import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
 
 const ReferralEarnings = () => {
   const { isLoading, setIsLoading } = useContext(SidebarContext);
-  const { state: { userInfo } } = useContext(UserContext);
-
-  // get token from userInfo or cookie
-  const token = userInfo?.token || (() => {
-    try { return JSON.parse(Cookies.get("userInfo") || "{}")?.token; } catch { return null; }
-  })();
 
   const {
     data,
@@ -28,8 +20,6 @@ const ReferralEarnings = () => {
   } = useQuery({
     queryKey: ["referralEarnings"],
     queryFn: async () => await OrderServices.getReferralEarnings(),
-    enabled: !!token,
-    staleTime: 0,
     retry: 1,
   });
 
@@ -38,22 +28,14 @@ const ReferralEarnings = () => {
     error: walletError,
     isLoading: walletLoading,
   } = useQuery({
-    queryKey: ["walletTransactions", token],
+    queryKey: ["walletTransactions"],
     queryFn: async () => await CustomerServices.getWalletTransactions(),
-    enabled: !!token,
-    staleTime: 0,
     retry: 1,
   });
 
   const payoutHistory = (walletData?.transactions || []).filter(
     (t) => t.type === "withdrawal"
   );
-
-  // debug: log errors to console
-  useEffect(() => {
-    if (walletError) console.error("walletTransactions error:", walletError);
-    if (error) console.error("referralEarnings error:", error);
-  }, [walletError, error]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -162,13 +144,6 @@ const ReferralEarnings = () => {
               <h2 className="text-xl font-serif font-semibold mb-5 mt-10">
                 Payment History
               </h2>
-              {walletData?.walletBalance !== undefined && (
-                <div className="mb-4 p-4 bg-blue-50 rounded-md">
-                  <p className="text-sm text-gray-600">
-                    Current Wallet Balance: <span className="text-xl font-bold text-blue-600">₹{parseFloat(walletData.walletBalance || 0).toFixed(2)}</span>
-                  </p>
-                </div>
-              )}
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="align-middle inline-block border border-gray-100 rounded-md min-w-full pb-2 sm:px-6 lg:px-8">
                   <div className="overflow-hidden border-b last:border-b-0 border-gray-100 rounded-md">
@@ -179,11 +154,6 @@ const ReferralEarnings = () => {
                         error={walletError}
                         loading={walletLoading}
                       />
-                    ) : walletError ? (
-                      <div className="text-center py-8">
-                        <p className="text-red-500 text-sm font-medium">Error loading payment history:</p>
-                        <p className="text-red-400 text-xs mt-1">{walletError?.response?.data?.message || walletError?.message || "Unknown error"}</p>
-                      </div>
                     ) : payoutHistory.length === 0 ? (
                       <div className="text-center">
                         <span className="flex justify-center my-30 pt-16 text-emerald-500 font-semibold text-6xl">
