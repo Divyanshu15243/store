@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { IoBagHandle } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 
 //internal import
 import Dashboard from "@pages/user/dashboard";
@@ -8,10 +9,17 @@ import OrderServices from "@services/OrderServices";
 import CustomerServices from "@services/CustomerServices";
 import Loading from "@components/preloader/Loading";
 import { SidebarContext } from "@context/SidebarContext";
+import { UserContext } from "@context/UserContext";
 import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
 
 const ReferralEarnings = () => {
   const { isLoading, setIsLoading } = useContext(SidebarContext);
+  const { state: { userInfo } } = useContext(UserContext);
+
+  // get token from userInfo or cookie
+  const token = userInfo?.token || (() => {
+    try { return JSON.parse(Cookies.get("userInfo") || "{}")?.token; } catch { return null; }
+  })();
 
   const {
     data,
@@ -20,6 +28,8 @@ const ReferralEarnings = () => {
   } = useQuery({
     queryKey: ["referralEarnings"],
     queryFn: async () => await OrderServices.getReferralEarnings(),
+    enabled: !!token,
+    staleTime: 0,
     retry: 1,
   });
 
@@ -28,14 +38,22 @@ const ReferralEarnings = () => {
     error: walletError,
     isLoading: walletLoading,
   } = useQuery({
-    queryKey: ["walletTransactions"],
+    queryKey: ["walletTransactions", token],
     queryFn: async () => await CustomerServices.getWalletTransactions(),
+    enabled: !!token,
+    staleTime: 0,
     retry: 1,
   });
 
   const payoutHistory = (walletData?.transactions || []).filter(
     (t) => t.type === "withdrawal"
   );
+
+  // debug: log errors to console
+  useEffect(() => {
+    if (walletError) console.error("walletTransactions error:", walletError);
+    if (error) console.error("referralEarnings error:", error);
+  }, [walletError, error]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -161,6 +179,11 @@ const ReferralEarnings = () => {
                         error={walletError}
                         loading={walletLoading}
                       />
+                    ) : walletError ? (
+                      <div className="text-center py-8">
+                        <p className="text-red-500 text-sm font-medium">Error loading payment history:</p>
+                        <p className="text-red-400 text-xs mt-1">{walletError?.response?.data?.message || walletError?.message || "Unknown error"}</p>
+                      </div>
                     ) : payoutHistory.length === 0 ? (
                       <div className="text-center">
                         <span className="flex justify-center my-30 pt-16 text-emerald-500 font-semibold text-6xl">
