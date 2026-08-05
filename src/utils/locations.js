@@ -24,6 +24,14 @@ export const SURAT_LOCATIONS = [
   "Gale Mandi",
   "Sodagarwad",
   "Dumbhal",
+  "Ghod Dod Road",
 ];
 
-export const ZIP_CODES = ["395001", "395002", "395003", "395009", "395010"];
+export const ZIP_CODES = [
+  "395001",
+  "395002",
+  "395003",
+  "395007",
+  "395009",
+  "395010",
+];
