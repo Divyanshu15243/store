@@ -4,16 +4,15 @@ import { IoBagHandleOutline } from "react-icons/io5";
 import { useCart } from "react-use-cart";
 
 //internal import
-import useGetSetting from "@hooks/useGetSetting";
 import { SidebarContext } from "@context/SidebarContext";
 
 const StickyCart = () => {
   const { totalItems, cartTotal } = useCart();
   const { toggleCartDrawer } = useContext(SidebarContext);
 
-  const { globalSetting } = useGetSetting();
 
-  const currency = globalSetting?.default_currency || "$";
+  // store always shows Indian Rupee
+  const currency = "₹";
 
   return (
     <button aria-label="Cart" onClick={toggleCartDrawer} className="absolute">

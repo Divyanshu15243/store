@@ -40,7 +40,6 @@ const ForgetPassword = () => {
                         label="Email"
                         name="email"
                         type="email"
-                        placeholder="Your Register Email"
                         Icon={FiMail}
                       />
                       <Error errorName={errors.email} />

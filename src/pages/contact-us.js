@@ -197,9 +197,6 @@ const ContactUs = () => {
                         label={t("common:contact-page-form-input-name")}
                         name="name"
                         type="text"
-                        placeholder={t(
-                          "common:contact-page-form-plaholder-name"
-                        )}
                       />
                       <Error errorName={errors.name} />
                     </div>
@@ -209,9 +206,6 @@ const ContactUs = () => {
                         label={t("common:contact-page-form-input-email")}
                         name="email"
                         type="email"
-                        placeholder={t(
-                          "common:contact-page-form-plaholder-email"
-                        )}
                       />
                       <Error errorName={errors.email} />
                     </div>
@@ -222,9 +216,6 @@ const ContactUs = () => {
                       label={t("common:contact-page-form-input-subject")}
                       name="subject"
                       type="text"
-                      placeholder={t(
-                        "common:contact-page-form-plaholder-subject"
-                      )}
                     />
                     <Error errorName={errors.subject} />
                   </div>
@@ -241,9 +232,6 @@ const ContactUs = () => {
                       autoComplete="off"
                       spellCheck="false"
                       rows="4"
-                      placeholder={t(
-                        "common:contact-page-form-plaholder-message"
-                      )}
                     ></textarea>
                     <Error errorName={errors.message} />
                   </div>

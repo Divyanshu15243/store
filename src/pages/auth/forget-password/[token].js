@@ -95,7 +95,6 @@ const ForgetPassword = () => {
                       label="Email"
                       name="registerEmail"
                       type="email"
-                      placeholder="Email"
                       Icon={FiMail}
                     />
                     <Error errorName={errors.registerEmail} />
@@ -107,7 +106,6 @@ const ForgetPassword = () => {
                       name="password"
                       type="password"
                       autocomplete="new-password"
-                      placeholder="Password"
                       Icon={FiLock}
                     />
 
@@ -123,7 +121,6 @@ const ForgetPassword = () => {
                       Icon={FiLock}
                       name="newPassword"
                       type="password"
-                      placeholder="New password"
                       register={register}
                       label="New password"
                       pattern={
@@ -144,7 +141,6 @@ const ForgetPassword = () => {
                     <input
                       name="confirm_password"
                       type="password"
-                      placeholder="Confirm password"
                       {...register("confirm_password", {
                         validate: (value) =>
                           value === password.current ||

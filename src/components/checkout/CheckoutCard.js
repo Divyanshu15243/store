@@ -3,14 +3,13 @@ import { useCart } from "react-use-cart";
 import { FiPlus, FiMinus } from "react-icons/fi";
 
 //internal imports
-import useGetSetting from "@hooks/useGetSetting";
 
 const CheckoutCard = ({ item }) => {
   const { updateItemQuantity } = useCart();
 
-  const { globalSetting } = useGetSetting();
 
-  const currency = globalSetting?.default_currency || "$";
+  // store always shows Indian Rupee
+  const currency = "₹";
 
   return (
     <div
@@ -54,7 +53,7 @@ const CheckoutCard = ({ item }) => {
           </div>
 
           <div className="font-bold text-sm text-heading leading-5">
-            <span>${(item.price * item.quantity).toFixed(2)}</span>
+            <span>{currency}{(item.price * item.quantity).toFixed(2)}</span>
           </div>
         </div>
       </div>

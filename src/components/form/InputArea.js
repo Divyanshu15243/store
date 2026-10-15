@@ -40,7 +40,6 @@ const InputArea = ({
           name={name}
           readOnly={readOnly}
           defaultValue={defaultValue}
-          placeholder={placeholder}
           autoComplete={autocomplete}
           className={`${
             Icon ? "py-2 pl-10" : "py-2 px-4 md:px-5"

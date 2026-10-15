@@ -118,9 +118,6 @@ const UpdateProfile = () => {
                           )}
                           name="name"
                           type="text"
-                          placeholder={showingTranslateValue(
-                            storeCustomizationSetting?.dashboard?.full_name
-                          )}
                         />
                         <Error errorName={errors.name} />
                       </div>
@@ -133,9 +130,6 @@ const UpdateProfile = () => {
                           )}
                           name="address"
                           type="text"
-                          placeholder={showingTranslateValue(
-                            storeCustomizationSetting?.dashboard?.address
-                          )}
                         />
                         <Error errorName={errors.address} />
                       </div>
@@ -148,9 +142,6 @@ const UpdateProfile = () => {
                           )}
                           name="phone"
                           type="tel"
-                          placeholder={showingTranslateValue(
-                            storeCustomizationSetting?.dashboard?.user_phone
-                          )}
                         />
                         <Error errorName={errors.phone} />
                       </div>
@@ -163,9 +154,6 @@ const UpdateProfile = () => {
                           readOnly={true}
                           defaultValue={session?.user?.email}
                           label={showingTranslateValue(
-                            storeCustomizationSetting?.dashboard?.user_email
-                          )}
-                          placeholder={showingTranslateValue(
                             storeCustomizationSetting?.dashboard?.user_email
                           )}
                         />

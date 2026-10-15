@@ -55,7 +55,6 @@ const AddShippingAddress = () => {
                           label="Full Name"
                           name="name"
                           type="text"
-                          placeholder="Input your full name"
                         />
 
                         <Error errorName={errors.name} />
@@ -67,7 +66,6 @@ const AddShippingAddress = () => {
                           label="Full Address"
                           name="address"
                           type="text"
-                          placeholder="Input your full address"
                         />
 
                         <Error errorName={errors.address} />
@@ -79,7 +77,6 @@ const AddShippingAddress = () => {
                           label="Phone"
                           name="contact"
                           type="tel"
-                          placeholder="Phone/Mobile"
                         />
 
                         <Error errorName={errors.contact} />
@@ -90,7 +87,6 @@ const AddShippingAddress = () => {
                           label="Email"
                           name="email"
                           type="tel"
-                          placeholder="Email"
                           readOnly={true}
                         />
 
@@ -142,7 +138,6 @@ const AddShippingAddress = () => {
                           label="Zip Code"
                           name="zipCode"
                           type="text"
-                          placeholder="Zip Code"
                           required={false}
                         />
 

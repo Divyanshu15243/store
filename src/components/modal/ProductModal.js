@@ -2,7 +2,7 @@ import useTranslation from "next-translate/useTranslation";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiMinus, FiPlus } from "react-icons/fi";
 
 //internal import
@@ -14,7 +14,6 @@ import useAddToCart from "@hooks/useAddToCart";
 import MainModal from "@components/modal/MainModal";
 import Discount from "@components/common/Discount";
 import VariantList from "@components/variants/VariantList";
-import { SidebarContext } from "@context/SidebarContext";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import { handleLogEvent } from "src/lib/analytics";
 
@@ -26,7 +25,6 @@ const ProductModal = ({
   currency,
 }) => {
   const router = useRouter();
-  const { setIsLoading, isLoading } = useContext(SidebarContext);
   const { t } = useTranslation("ns1");
 
   const { handleAddItem, setItem, item } = useAddToCart();
@@ -154,7 +152,6 @@ const ProductModal = ({
     setModalOpen(false);
 
     router.push(`/product/${slug}`);
-    setIsLoading(!isLoading);
     handleLogEvent("product", `opened ${slug} product details`);
   };
 
@@ -295,7 +292,6 @@ const ProductModal = ({
                         <button
                           type="button"
                           className="text-gray-600 font-serif font-medium underline ml-2 hover:text-teal-600"
-                          onClick={() => setIsLoading(!isLoading)}
                         >
                           {category_name}
                         </button>

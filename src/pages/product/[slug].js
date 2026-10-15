@@ -211,7 +211,6 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                     >
                       <button
                         type="button"
-                        onClick={() => setIsLoading(!isLoading)}
                       >
                         {category_name}
                       </button>
@@ -379,7 +378,6 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                                 <button
                                   type="button"
                                   className="text-gray-600 font-serif font-medium underline ml-2 hover:text-teal-600"
-                                  onClick={() => setIsLoading(!isLoading)}
                                 >
                                   {category_name}
                                 </button>

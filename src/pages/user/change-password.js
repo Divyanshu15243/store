@@ -72,9 +72,6 @@ const ChangePassword = () => {
                     name="email"
                     type="email"
                     autocomplete="username"
-                    placeholder={showingTranslateValue(
-                      storeCustomizationSetting?.dashboard?.user_email
-                    )}
                     readOnly={true}
                   />
                   <Error errorName={errors.email} />
@@ -88,9 +85,6 @@ const ChangePassword = () => {
                     name="currentPassword"
                     type="password"
                     autocomplete="new-password"
-                    placeholder={showingTranslateValue(
-                      storeCustomizationSetting?.dashboard?.current_password
-                    )}
                   />
                   <Error errorName={errors.currentPassword} />
                 </div>
@@ -103,9 +97,6 @@ const ChangePassword = () => {
                     name="newPassword"
                     type="password"
                     autocomplete="new-password"
-                    placeholder={showingTranslateValue(
-                      storeCustomizationSetting?.dashboard?.new_password
-                    )}
                     pattern={
                       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/
                     }

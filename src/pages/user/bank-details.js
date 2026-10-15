@@ -80,7 +80,6 @@ const BankDetails = () => {
                       required: "Account holder name is required",
                     })}
                     type="text"
-                    placeholder="Enter account holder name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   {errors.accountHolderName && (
@@ -101,7 +100,6 @@ const BankDetails = () => {
                       },
                     })}
                     type="text"
-                    placeholder="Enter account number"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   {errors.accountNumber && (
@@ -122,7 +120,6 @@ const BankDetails = () => {
                       },
                     })}
                     type="text"
-                    placeholder="Enter IFSC code"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     style={{ textTransform: "uppercase" }}
                   />
@@ -140,7 +137,6 @@ const BankDetails = () => {
                       required: "Bank name is required",
                     })}
                     type="text"
-                    placeholder="Enter bank name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   {errors.bankName && (
@@ -157,7 +153,6 @@ const BankDetails = () => {
                       required: "Branch name is required",
                     })}
                     type="text"
-                    placeholder="Enter branch name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   {errors.branchName && (

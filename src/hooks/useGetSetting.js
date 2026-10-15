@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 //internal import
@@ -8,8 +8,6 @@ import { storeCustomization } from "@utils/storeCustomizationSetting";
 
 const useGetSetting = () => {
   const lang = Cookies.get("_lang");
-  const [storeCustomizationSetting, setStoreCustomizationSetting] =
-    useState(storeCustomization);
 
   const { data: globalSetting } = useQuery({
     queryKey: ["globalSetting"],
@@ -32,21 +30,18 @@ const useGetSetting = () => {
 
   // console.log("data", Object.keys(data)?.length > 0, "isFetched", isFetched);
 
-  useEffect(() => {
-    if (isFetched && data) {
-      // console.log("Data is available:", data);
-      setStoreCustomizationSetting(data);
-    } else {
-      setStoreCustomizationSetting(storeCustomization);
-    }
+  // derived directly (no state copy) so every consumer avoids an extra re-render
+  const storeCustomizationSetting =
+    isFetched && data ? data : storeCustomization;
 
+  useEffect(() => {
     if (!lang) {
       Cookies.set("_lang", "en", {
         sameSite: "None",
         secure: true,
       });
     }
-  }, [data, isFetched, lang]);
+  }, [lang]);
 
   return {
     lang,

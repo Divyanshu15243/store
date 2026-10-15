@@ -7,7 +7,8 @@ const useUtilsFunction = () => {
 
   const { globalSetting } = useGetSetting();
 
-  const currency = globalSetting?.default_currency || "$";
+  // store always shows Indian Rupee
+  const currency = "₹";
 
   //for date and time format
   const showTimeFormat = (data, timeFormat) => {

@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useContext } from "react";
+import { Fragment, useState, useEffect } from "react";
 import Link from "next/link";
 import { Transition, Popover } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/outline";
@@ -19,43 +19,15 @@ import { useQuery } from "@tanstack/react-query";
 //internal import
 import useGetSetting from "@hooks/useGetSetting";
 import Category from "@components/category/Category";
-import { SidebarContext } from "@context/SidebarContext";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import useTranslation from "next-translate/useTranslation";
 
 const NavbarPromo = () => {
   const { t } = useTranslation();
   const { lang, storeCustomizationSetting } = useGetSetting();
-  const { isLoading, setIsLoading } = useContext(SidebarContext);
 
   const { showingTranslateValue } = useUtilsFunction();
 
-  const currentLanguageCookie = Cookies.get("_curr_lang");
-
-  let currentLang = {};
-  if (currentLanguageCookie && currentLanguageCookie !== "undefined") {
-    try {
-      currentLang = JSON.parse(currentLanguageCookie);
-    } catch (error) {
-      // console.error("Error parsing current language cookie:", error);
-      currentLang = {}; // Fallback to an empty object or handle as necessary
-    }
-  } else {
-    currentLang = null;
-  }
-  // const translation = t("common:search-placeholder");
-  // console.log("Translated title:", translation, router, router.pathname);
-
-  const handleLanguage = (lang) => {
-    Cookies.set("_lang", lang?.iso_code, {
-      sameSite: "None",
-      secure: true,
-    });
-    Cookies.set("_curr_lang", JSON.stringify(lang), {
-      sameSite: "None",
-      secure: true,
-    });
-  };
   const { data: languages, isFetched } = useQuery({
     queryKey: ["languages"],
     queryFn: async () => await SettingServices.getShowingLanguage(),
@@ -87,7 +59,6 @@ const NavbarPromo = () => {
                   >
                     <Link
                       href="/"
-                      onClick={() => setIsLoading(!isLoading)}
                       className="font-serif py-2 text-sm font-medium hover:text-emerald-600"
                     >
                       Home
@@ -130,7 +101,6 @@ const NavbarPromo = () => {
                     {storeCustomizationSetting?.navbar?.about_menu_status && (
                       <Link
                         href="/about-us"
-                        onClick={() => setIsLoading(!isLoading)}
                         className="font-serif mx-4 py-2 text-sm font-medium hover:text-emerald-600"
                       >
                         {showingTranslateValue(
@@ -141,7 +111,6 @@ const NavbarPromo = () => {
 
                     {storeCustomizationSetting?.navbar?.contact_menu_status && (
                       <Link
-                        onClick={() => setIsLoading(!isLoading)}
                         href="/contact-us"
                         className="font-serif mx-4 py-2 text-sm font-medium hover:text-emerald-600"
                       >
@@ -182,7 +151,6 @@ const NavbarPromo = () => {
                                     <FiGift className="my-auto" />
                                     <Link
                                       href="/offer"
-                                      onClick={() => setIsLoading(!isLoading)}
                                       className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                     >
                                       {showingTranslateValue(
@@ -198,7 +166,6 @@ const NavbarPromo = () => {
                                   <FiShoppingBag className="my-auto" />
                                   <Link
                                     href="/checkout"
-                                    onClick={() => setIsLoading(!isLoading)}
                                     className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                   >
                                     {showingTranslateValue(
@@ -216,7 +183,6 @@ const NavbarPromo = () => {
                                     <FiHelpCircle className="my-auto" />
                                     <Link
                                       href="/faq"
-                                      onClick={() => setIsLoading(!isLoading)}
                                       className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                     >
                                       {showingTranslateValue(
@@ -234,7 +200,6 @@ const NavbarPromo = () => {
                                     <FiUsers className="my-auto" />
                                     <Link
                                       href="/about-us"
-                                      onClick={() => setIsLoading(!isLoading)}
                                       className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                     >
                                       {showingTranslateValue(
@@ -253,7 +218,6 @@ const NavbarPromo = () => {
                                     <FiPhoneIncoming className="my-auto" />
                                     <Link
                                       href="/contact-us"
-                                      onClick={() => setIsLoading(!isLoading)}
                                       className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                     >
                                       {showingTranslateValue(
@@ -272,7 +236,6 @@ const NavbarPromo = () => {
                                     <FiPocket className="my-auto" />
                                     <Link
                                       href="/privacy-policy"
-                                      onClick={() => setIsLoading(!isLoading)}
                                       className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                     >
                                       {showingTranslateValue(
@@ -291,7 +254,6 @@ const NavbarPromo = () => {
                                     <FiFileText className="my-auto" />
                                     <Link
                                       href="/terms-and-conditions"
-                                      onClick={() => setIsLoading(!isLoading)}
                                       className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                     >
                                       {showingTranslateValue(
@@ -308,7 +270,6 @@ const NavbarPromo = () => {
                                   <FiAlertCircle className="my-auto" />
                                   <Link
                                     href="/404"
-                                    onClick={() => setIsLoading(!isLoading)}
                                     className="relative inline-flex items-center font-serif ml-2 py-0 rounded text-sm font-medium  hover:text-emerald-600"
                                   >
                                     404
@@ -324,7 +285,6 @@ const NavbarPromo = () => {
                     {storeCustomizationSetting?.navbar?.offers_menu_status && (
                       <Link
                         href="/offer"
-                        onClick={() => setIsLoading(!isLoading)}
                         className="relative inline-flex items-center  bg-red-100 font-serif ml-4 py-0 px-2 rounded text-sm font-medium text-red-500 hover:text-emerald-600"
                       >
                         {showingTranslateValue(
@@ -342,39 +302,8 @@ const NavbarPromo = () => {
             </Popover>
           </div>
           <div className="flex">
-            {/* flag */}
-            <div className="dropdown">
-              <div
-                className={`flot-l flag ${currentLang?.flag?.toLowerCase()}`}
-              ></div>
-              <button className="dropbtn">
-                {currentLang?.name}
-                &nbsp;<i className="fas fa-angle-down"></i>
-              </button>
-              <div className="dropdown-content">
-                {languages?.map((language, i) => {
-                  return (
-                    <Link
-                      onClick={() => {
-                        handleLanguage(language);
-                      }}
-                      key={i + 1}
-                      href="/"
-                      locale={`${language.iso_code}`}
-                    >
-                      <div
-                        className={`flot-l flag ${language?.flag?.toLowerCase()}`}
-                      ></div>
-                      {language?.name}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-
             {storeCustomizationSetting?.navbar?.privacy_policy_status && (
               <Link
-                onClick={() => setIsLoading(!isLoading)}
                 href="/privacy-policy"
                 className="font-serif mx-4 py-2 text-sm font-medium hover:text-emerald-600"
               >
@@ -385,7 +314,6 @@ const NavbarPromo = () => {
             )}
             {storeCustomizationSetting?.navbar?.term_and_condition_status && (
               <Link
-                onClick={() => setIsLoading(!isLoading)}
                 href="/terms-and-conditions"
                 className="font-serif mx-4 py-2 text-sm font-medium hover:text-emerald-600"
               >

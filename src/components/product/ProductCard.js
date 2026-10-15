@@ -10,7 +10,6 @@ import Price from "@components/common/Price";
 import Stock from "@components/common/Stock";
 import { notifyError } from "@utils/toast";
 import useAddToCart from "@hooks/useAddToCart";
-import useGetSetting from "@hooks/useGetSetting";
 import Discount from "@components/common/Discount";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import ProductModal from "@components/modal/ProductModal";
@@ -22,10 +21,10 @@ const ProductCard = ({ product, attributes }) => {
 
   const { items, addItem, updateItemQuantity, inCart } = useCart();
   const { handleIncreaseQuantity } = useAddToCart();
-  const { globalSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
 
-  const currency = globalSetting?.default_currency || "$";
+  // store always shows Indian Rupee
+  const currency = "₹";
 
   // console.log('attributes in product cart',attributes)
 

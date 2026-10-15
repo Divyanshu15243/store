@@ -13,8 +13,7 @@ import useUtilsFunction from "@hooks/useUtilsFunction";
 
 const CategoryCard = ({ title, icon, nested, id }) => {
   const router = useRouter();
-  const { closeCategoryDrawer, isLoading, setIsLoading } =
-    useContext(SidebarContext);
+  const { closeCategoryDrawer } = useContext(SidebarContext);
   const { showingTranslateValue } = useUtilsFunction();
 
   // react hook
@@ -31,7 +30,6 @@ const CategoryCard = ({ title, icon, nested, id }) => {
     setShow(!show);
     router.push(`/search?category=${name}&_id=${id}`);
     closeCategoryDrawer;
-    setIsLoading(!isLoading);
   };
 
   // handle sub nested category
@@ -41,7 +39,6 @@ const CategoryCard = ({ title, icon, nested, id }) => {
     setShowSubCategory({ id: id, show: showSubCategory.show ? false : true });
     router.push(`/search?category=${name}&_id=${id}`);
     closeCategoryDrawer;
-    setIsLoading(!isLoading);
   };
 
   const handleSubCategory = (id, categoryName) => {
@@ -49,7 +46,6 @@ const CategoryCard = ({ title, icon, nested, id }) => {
 
     router.push(`/search?category=${name}&_id=${id}`);
     closeCategoryDrawer;
-    setIsLoading(!isLoading);
   };
 
   return (

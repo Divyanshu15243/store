@@ -65,7 +65,6 @@ const PhoneSignup = () => {
                             <PhoneInput
                               {...field}
                               name={name}
-                              placeholder="Enter phone number"
                               international={true}
                               onChange={(value) => {
                                 field.onChange(value);

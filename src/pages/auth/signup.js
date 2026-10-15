@@ -183,7 +183,6 @@ const SignUp = () => {
                         type="text"
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder=""
                         className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-emerald-500"
                         required
                       />
@@ -203,7 +202,6 @@ const SignUp = () => {
                         value={formData.phone.replace("+91", "")}
                         onChange={handleChange}
                         onBlur={() => handleBlurCheck("phone")}
-                        placeholder=""
                         maxLength={10}
                         className="flex-1 px-3 py-3 text-sm outline-none bg-white"
                         required
@@ -228,7 +226,6 @@ const SignUp = () => {
                         value={formData.email}
                         onChange={handleChange}
                         onBlur={() => handleBlurCheck("email")}
-                        placeholder=""
                         className="w-full pl-10 pr-4 py-3 text-sm outline-none bg-white rounded-md"
                         required
                       />
@@ -248,7 +245,6 @@ const SignUp = () => {
                         type="text"
                         value={formData.referralCode}
                         onChange={handleChange}
-                        placeholder="Enter referral code"
                         className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-emerald-500"
                       />
                     </div>
@@ -282,7 +278,6 @@ const SignUp = () => {
                         type="text"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
-                        placeholder="• • • • • •"
                         maxLength={6}
                         className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md text-center text-xl font-bold tracking-widest focus:outline-none focus:border-emerald-500"
                         required

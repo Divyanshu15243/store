@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useContext, useRef } from "react";
+import React, { useRef } from "react";
 import { IoChevronBackOutline, IoChevronForward } from "react-icons/io5";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -10,7 +10,6 @@ import { Autoplay, Controller, Navigation, Pagination } from "swiper/modules";
 import { useQuery } from "@tanstack/react-query";
 
 //internal import
-import { SidebarContext } from "@context/SidebarContext";
 import CategoryServices from "@services/CategoryServices";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import Loading from "@components/preloader/Loading";
@@ -22,7 +21,6 @@ const CategoryCarousel = () => {
   const nextRef = useRef(null);
 
   const { showingTranslateValue } = useUtilsFunction();
-  const { isLoading, setIsLoading } = useContext(SidebarContext);
 
   const {
     data,
@@ -41,7 +39,6 @@ const CategoryCarousel = () => {
       .replace(/[^A-Z0-9]+/gi, "-");
 
     router.push(`/search?category=${category_name}&_id=${id}`);
-    setIsLoading(!isLoading);
   };
 
   return (

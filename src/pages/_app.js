@@ -1,6 +1,5 @@
 import "@styles/custom.css";
 import { CartProvider } from "react-use-cart";
-import { Elements } from "@stripe/react-stripe-js";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { Provider } from "react-redux";
@@ -13,15 +12,14 @@ import TawkMessengerReact from "@tawk.to/tawk-messenger-react";
 
 // Internal imports
 import store from "@redux/store";
-import getStripe from "@lib/stripe";
 import { handlePageView } from "@lib/analytics";
 import { UserProvider } from "@context/UserContext";
 import DefaultSeo from "@components/common/DefaultSeo";
+import RouteProgress from "@components/common/RouteProgress";
 import { SidebarProvider } from "@context/SidebarContext";
 import SettingServices from "@services/SettingServices";
 
 let persistor = persistStore(store);
-let stripePromise = getStripe();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +33,9 @@ const queryClient = new QueryClient({
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [storeSetting, setStoreSetting] = useState(null);
+  const [showChat, setShowChat] = useState(false);
 
+  // fetch store settings once, not on every navigation
   useEffect(() => {
     const fetchStoreSettings = async () => {
       try {
@@ -44,35 +44,44 @@ function MyApp({ Component, pageProps }) {
           queryFn: async () => await SettingServices.getStoreSetting(),
           staleTime: 4 * 60 * 1000, // Cache data for 4 minutes
         });
-
         setStoreSetting(settings);
-
-        // Initialize Google Analytics
-        if (settings?.google_analytic_status) {
-          ReactGA.initialize(settings?.google_analytic_key || "");
-          handlePageView();
-
-          const handleRouteChange = (url) => {
-            handlePageView(`/${router.pathname}`, "N23 Gujarati Basket");
-          };
-
-          router.events.on("routeChangeComplete", handleRouteChange);
-          return () => {
-            router.events.off("routeChangeComplete", handleRouteChange);
-          };
-        }
       } catch (error) {
         console.error("Failed to fetch store settings:", error);
       }
     };
 
     fetchStoreSettings();
-  }, [router]);
+  }, []);
+
+  // Initialize Google Analytics once settings are known
+  useEffect(() => {
+    if (!storeSetting?.google_analytic_status) return;
+
+    ReactGA.initialize(storeSetting?.google_analytic_key || "");
+    handlePageView();
+
+    const handleRouteChange = (url) => {
+      handlePageView(url, "N23 Gujarati Basket");
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storeSetting?.google_analytic_status]);
+
+  // load the chat widget after the page has settled so it doesn't slow first taps
+  useEffect(() => {
+    if (!storeSetting?.tawk_chat_status) return;
+    const t = setTimeout(() => setShowChat(true), 5000);
+    return () => clearTimeout(t);
+  }, [storeSetting?.tawk_chat_status]);
 
   return (
     <>
       {/* Render TawkMessengerReact only if tawk_chat_status is enabled */}
-      {storeSetting?.tawk_chat_status && (
+      {showChat && (
         <TawkMessengerReact
           propertyId={storeSetting?.tawk_chat_property_id || ""}
           widgetId={storeSetting?.tawk_chat_widget_id || ""}
@@ -84,12 +93,11 @@ function MyApp({ Component, pageProps }) {
             <Provider store={store}>
               <PersistGate loading={null} persistor={persistor}>
                 <SidebarProvider>
-                  <Elements stripe={stripePromise}>
-                    <CartProvider>
-                      <DefaultSeo />
-                      <Component {...pageProps} />
-                    </CartProvider>
-                  </Elements>
+                  <CartProvider>
+                    <DefaultSeo />
+                    <RouteProgress />
+                    <Component {...pageProps} />
+                  </CartProvider>
                 </SidebarProvider>
               </PersistGate>
             </Provider>

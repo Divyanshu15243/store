@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import { CardElement } from "@stripe/react-stripe-js";
+import { CardElement, Elements } from "@stripe/react-stripe-js";
 import Link from "next/link";
 import {
   IoReturnUpBackOutline,
@@ -28,6 +28,7 @@ import SettingServices from "@services/SettingServices";
 import SwitchToggle from "@components/form/SwitchToggle";
 import SelectOption from "@components/form/SelectOption";
 import { SURAT_LOCATIONS, ZIP_CODES } from "@utils/locations";
+import getStripe from "@lib/stripe";
 
 const Checkout = () => {
   const { t } = useTranslation();
@@ -102,7 +103,6 @@ const Checkout = () => {
                           )}
                           name="firstName"
                           type="text"
-                          placeholder="Name"
                         />
                         <Error errorName={errors.firstName} />
                       </div>
@@ -115,7 +115,6 @@ const Checkout = () => {
                           )}
                           name="lastName"
                           type="text"
-                          placeholder="LastName"
                           required={false}
                         />
                         <Error errorName={errors.lastName} />
@@ -130,7 +129,6 @@ const Checkout = () => {
                           name="email"
                           type="email"
                           readOnly={true}
-                          placeholder="youremail@gmail.com"
                         />
                         <Error errorName={errors.email} />
                       </div>
@@ -143,7 +141,6 @@ const Checkout = () => {
                           )}
                           name="contact"
                           type="tel"
-                          placeholder="Enter a number"
                         />
 
                         <Error errorName={errors.contact} />
@@ -168,7 +165,6 @@ const Checkout = () => {
                           )}
                           name="address"
                           type="text"
-                          placeholder="address.."
                         />
                         <Error errorName={errors.address} />
                       </div>
@@ -181,7 +177,6 @@ const Checkout = () => {
                           )}
                           name="city"
                           type="text"
-                          placeholder="City"
                           defaultValue="Surat"
                           readOnly={true}
                         />
@@ -214,7 +209,6 @@ const Checkout = () => {
                           )}
                           name="country"
                           type="text"
-                          placeholder="India"
                           defaultValue="India"
                           readOnly={true}
                         />
@@ -459,7 +453,6 @@ const Checkout = () => {
                         <input
                           ref={couponRef}
                           type="text"
-                          placeholder={t("couponCode")}
                           className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-emerald-500 placeholder-gray-500 placeholder-opacity-75"
                         />
                         {isCouponAvailable ? (
@@ -538,4 +531,16 @@ const Checkout = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(Checkout), { ssr: false });
+// Stripe is only needed here, so it is loaded when checkout opens instead of on every page
+const CheckoutWithStripe = () => {
+  const [stripePromise] = useState(() => getStripe());
+  return (
+    <Elements stripe={stripePromise}>
+      <Checkout />
+    </Elements>
+  );
+};
+
+export default dynamic(() => Promise.resolve(CheckoutWithStripe), {
+  ssr: false,
+});

@@ -22,7 +22,6 @@ const TagInput = ({ notes, addNote, removeNote }) => {
         type="text"
         onBlur={(event) => addNote(event)}
         onKeyUp={(event) => (event.key === 'Enter' ? addNote(event) : null)}
-        placeholder="Press enter to add note"
       />
     </div>
   );
