@@ -10,11 +10,13 @@ import {
 //internal import
 import { SidebarContext } from "@context/SidebarContext";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import { usePrefetchCategory } from "@hooks/useStoreProducts";
 
 const CategoryCard = ({ title, icon, nested, id }) => {
   const router = useRouter();
   const { closeCategoryDrawer } = useContext(SidebarContext);
   const { showingTranslateValue } = useUtilsFunction();
+  const prefetchCategory = usePrefetchCategory();
 
   // react hook
   const [show, setShow] = useState(false);
@@ -29,7 +31,8 @@ const CategoryCard = ({ title, icon, nested, id }) => {
 
     setShow(!show);
     router.push(`/search?category=${name}&_id=${id}`);
-    closeCategoryDrawer;
+    // keep the menu open only when there are sub categories to pick from
+    if (!nested?.length) closeCategoryDrawer();
   };
 
   // handle sub nested category
@@ -38,19 +41,19 @@ const CategoryCard = ({ title, icon, nested, id }) => {
 
     setShowSubCategory({ id: id, show: showSubCategory.show ? false : true });
     router.push(`/search?category=${name}&_id=${id}`);
-    closeCategoryDrawer;
   };
 
   const handleSubCategory = (id, categoryName) => {
     const name = categoryName.toLowerCase().replace(/[^A-Z0-9]+/gi, "-");
 
     router.push(`/search?category=${name}&_id=${id}`);
-    closeCategoryDrawer;
+    closeCategoryDrawer();
   };
 
   return (
     <>
       <a
+        onPointerDown={() => prefetchCategory(id)}
         onClick={() => showCategory(id, title)}
         className="p-2 flex items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600"
         role="button"
@@ -81,6 +84,7 @@ const CategoryCard = ({ title, icon, nested, id }) => {
             <li key={children._id}>
               {children.children.length > 0 ? (
                 <a
+                  onPointerDown={() => prefetchCategory(children._id)}
                   onClick={() =>
                     handleSubNestedCategory(
                       children._id,
@@ -110,6 +114,7 @@ const CategoryCard = ({ title, icon, nested, id }) => {
                 </a>
               ) : (
                 <a
+                  onPointerDown={() => prefetchCategory(children._id)}
                   onClick={() =>
                     handleSubCategory(
                       children._id,
@@ -132,6 +137,7 @@ const CategoryCard = ({ title, icon, nested, id }) => {
                   {children.children.map((subChildren) => (
                     <li key={subChildren._id}>
                       <a
+                        onPointerDown={() => prefetchCategory(subChildren._id)}
                         onClick={() =>
                           handleSubCategory(
                             subChildren._id,

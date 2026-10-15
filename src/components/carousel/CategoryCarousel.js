@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 //internal import
 import CategoryServices from "@services/CategoryServices";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import { usePrefetchCategory } from "@hooks/useStoreProducts";
 import Loading from "@components/preloader/Loading";
 
 const CategoryCarousel = () => {
@@ -21,6 +22,7 @@ const CategoryCarousel = () => {
   const nextRef = useRef(null);
 
   const { showingTranslateValue } = useUtilsFunction();
+  const prefetchCategory = usePrefetchCategory();
 
   const {
     data,
@@ -106,6 +108,7 @@ const CategoryCarousel = () => {
             {data[0]?.children?.map((category, i) => (
               <SwiperSlide key={i + 1} className="group">
                 <div
+                  onPointerDown={() => prefetchCategory(category?._id)}
                   onClick={() =>
                     handleCategoryClick(category?._id, category.name)
                   }

@@ -1,25 +1,45 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import useTranslation from "next-translate/useTranslation";
 
 //internal import
 import Layout from "@layout/Layout";
 import useFilter from "@hooks/useFilter";
 import Card from "@components/cta-card/Card";
-import Loading from "@components/preloader/Loading";
-import ProductServices from "@services/ProductServices";
 import ProductCard from "@components/product/ProductCard";
-import { SidebarContext } from "@context/SidebarContext";
-import AttributeServices from "@services/AttributeServices";
 import CategoryCarousel from "@components/carousel/CategoryCarousel";
+import { useStoreProducts } from "@hooks/useStoreProducts";
 
-const Search = ({ products, attributes }) => {
+// grey boxes shown while products load, so the page appears instantly
+const ProductSkeleton = () => (
+  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
+    {Array.from({ length: 12 }).map((_, i) => (
+      <div
+        key={i}
+        className="animate-pulse rounded-md border border-gray-100 bg-white p-3"
+      >
+        <div className="h-32 w-full rounded bg-gray-200" />
+        <div className="mt-3 h-3 w-3/4 rounded bg-gray-200" />
+        <div className="mt-2 h-3 w-1/2 rounded bg-gray-200" />
+      </div>
+    ))}
+  </div>
+);
+
+// products are fetched in the browser (and cached) instead of on the server,
+// so opening a category no longer waits for a full server round trip
+const Search = () => {
   const { t } = useTranslation();
-  const { isLoading, setIsLoading } = useContext(SidebarContext);
+  const router = useRouter();
+  const { query, _id } = router.query;
 
-  useEffect(() => {
-    setIsLoading(false);
-  }, [products]);
+  const {
+    products: { data: products, isLoading: productsLoading },
+    attributes: { data: attributes },
+  } = useStoreProducts(_id || "", query || "", router.isReady);
+
+  const isLoading = !router.isReady || productsLoading;
 
   const { setSortedField, productData } = useFilter(products);
 
@@ -35,7 +55,7 @@ const Search = ({ products, attributes }) => {
               <div className="relative">
                 <CategoryCarousel />
               </div>
-              {productData?.length === 0 ? (
+              {isLoading ? null : productData?.length === 0 ? (
                 <div className="mx-auto p-5 my-5">
                   <Image
                     className="my-4 mx-auto"
@@ -75,13 +95,13 @@ const Search = ({ products, attributes }) => {
               )}
 
               {isLoading ? (
-                <Loading loading={isLoading} />
+                <ProductSkeleton />
               ) : (
                 <>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
                     {productData?.map((product, i) => (
                       <ProductCard
-                        key={i + 1}
+                        key={product._id || i}
                         product={product}
                         attributes={attributes}
                       />
@@ -98,22 +118,3 @@ const Search = ({ products, attributes }) => {
 };
 
 export default Search;
-
-export const getServerSideProps = async (context) => {
-  const { query, _id } = context.query;
-
-  const [data, attributes] = await Promise.all([
-    ProductServices.getShowingStoreProducts({
-      category: _id ? _id : "",
-      title: query ? encodeURIComponent(query) : "",
-    }),
-    AttributeServices.getShowingAttributes({}),
-  ]);
-
-  return {
-    props: {
-      attributes,
-      products: data?.products,
-    },
-  };
-};

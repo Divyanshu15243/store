@@ -7,10 +7,12 @@ import { IoChevronForwardSharp } from "react-icons/io5";
 import CategoryServices from "@services/CategoryServices";
 import CMSkeleton from "@components/preloader/CMSkeleton";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import { usePrefetchCategory } from "@hooks/useStoreProducts";
 
 const FeatureCategory = () => {
   const router = useRouter();
   const { showingTranslateValue } = useUtilsFunction();
+  const prefetchCategory = usePrefetchCategory();
 
   const {
     data,
@@ -43,6 +45,7 @@ const FeatureCategory = () => {
                 <li className="group" key={category._id}>
                   {/* whole card is tappable, not just the name */}
                   <div
+                    onPointerDown={() => prefetchCategory(category._id)}
                     onClick={() =>
                       handleCategoryClick(
                         category._id,
