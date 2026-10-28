@@ -252,55 +252,7 @@ const Checkout = () => {
                           value="Free Shipping"
                           description="Free delivery"
                           cost={0}
-                        />
-                        <Error errorName={errors.shippingOption} />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-2">
-                        <InputShipping
-                          currency={currency}
-                          handleShippingCost={handleShippingCost}
-                          register={register}
-                          // value="FedEx"
-                          value={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_name_two
-                          )}
-                          description={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_one_desc
-                          )}
-                          // time="Today"
-                          cost={
-                            Number(
-                              storeCustomizationSetting?.checkout
-                                ?.shipping_one_cost
-                            ) || 60
-                          }
-                        />
-                        <Error errorName={errors.shippingOption} />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-2">
-                        <InputShipping
-                          currency={currency}
-                          handleShippingCost={handleShippingCost}
-                          register={register}
-                          value={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_name_two
-                          )}
-                          description={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_two_desc
-                          )}
-                          // time="7 Days"
-                          cost={
-                            Number(
-                              storeCustomizationSetting?.checkout
-                                ?.shipping_two_cost
-                            ) || 20
-                          }
+                          defaultChecked
                         />
                         <Error errorName={errors.shippingOption} />
                       </div>

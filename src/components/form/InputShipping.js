@@ -9,6 +9,7 @@ const InputShipping = ({
   currency,
   description,
   handleShippingCost,
+  defaultChecked = false,
 }) => {
   return (
     <div>
@@ -40,6 +41,7 @@ const InputShipping = ({
               name="shippingOption"
               type="radio"
               value={value}
+              defaultChecked={defaultChecked}
               className="form-radio outline-none focus:ring-0 text-emerald-500"
             />
           </div>
